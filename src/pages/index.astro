@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSpotlight from '../components/HeroSpotlight.astro';
 import { getCollection } from 'astro:content';
 
 const projects = [
@@ -26,6 +27,7 @@ const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
   <main id="top">
     <section class="hero">
       <div class="hero-grid" aria-hidden="true"></div><div class="hero-glow" aria-hidden="true"></div>
+      <HeroSpotlight />
       <div class="hero-content container">
         <div class="eyebrow">个人技术博客 · NETWORK & CODE</div>
         <h1>SmalL<span>Coat</span></h1>
