@@ -7,7 +7,12 @@ const projects = [
   { name: 'Cyber_Platform', description: '自建 CTF 题库网站，记录平台构建与安全学习。', tech: 'TYPESCRIPT · CTF', href: 'https://github.com/waitaoxiao985/Cyber_Platform', number: '02' },
   { name: 'CyberSpace_Notes', description: '持续整理网络空间安全方向的学习笔记。', tech: 'NOTES · SECURITY', href: 'https://github.com/waitaoxiao985/CyberSpace_Notes', number: '03' },
 ];
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => a.id.localeCompare(b.id));
+const weeks = [1, 2, 3, 4].map((week) => ({
+  week,
+  label: ['破冰与实验环境', '信息搜集与侦察', '注入风险与验证', '客户端与服务端安全'][week - 1],
+  posts: posts.filter((post) => post.data.tags.includes(`Week ${week}`)),
+}));
 const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
 ---
 <BaseLayout>
@@ -63,9 +68,14 @@ const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 
     {posts.length > 0 && <section class="section" id="articles">
       <div class="container">
-        <div class="section-heading"><div><div class="section-kicker">Writing / Notes</div><h2 class="section-title">最近文章</h2></div><div class="section-note">Markdown 驱动，持续更新。</div></div>
-        <div class="project-list">
-          {posts.map((post) => <a class="project" href={`/posts/${post.id}/`}><div class="project-top"><span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span><span class="project-symbol">↗</span></div><h3 class="project-title">{post.data.title}</h3><p class="project-desc">{post.data.description}</p><span class="project-tag">{post.data.tags.join(' · ')}</span></a>)}
+        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title">网络安全实战学习记录</h2></div><div class="section-note">4 周 · 28 篇 · 按学习顺序整理</div></div>
+        <div class="week-list">
+          {weeks.map((group) => <section class="week-group" aria-labelledby={`week-${group.week}`}>
+            <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}>{group.label}</h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
+            <div class="article-list">
+              {group.posts.map((post) => <a class="article-row" href={`/posts/${post.id}/`}><span class="article-day">{post.id.replace('day-', 'DAY ')}</span><span class="article-main"><strong>{post.data.title}</strong><small>{post.data.description}</small></span><span class="article-arrow">↗</span></a>)}
+            </div>
+          </section>)}
         </div>
       </div>
     </section>}
