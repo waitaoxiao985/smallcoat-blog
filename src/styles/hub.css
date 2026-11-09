@@ -11,7 +11,7 @@
 .hub .hero-grid { position: absolute; z-index: -1; inset: 0; opacity: .42; pointer-events: none; background-image: linear-gradient(rgba(66,168,197,.085) 1px, transparent 1px), linear-gradient(90deg, rgba(66,168,197,.085) 1px, transparent 1px); background-size: 56px 56px; mask-image: linear-gradient(180deg, transparent 2%, #000 22%, #000 78%, transparent 98%); transform: perspective(600px) rotateX(7deg) scale(1.12); transform-origin: center 72%; }
 .hub .hero-glow { position: absolute; z-index: -1; top: 18%; right: 6%; width: 300px; height: 300px; border-radius: 50%; background: rgba(16,178,218,.1); filter: blur(100px); animation: breathe 7s ease-in-out infinite alternate; }
 
-.hub-inner { display: grid; grid-template-areas: "brand brand" "copy art"; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: 30px 64px; align-items: center; }
+.hub-inner { display: grid; grid-template-areas: "brand brand" "copy art"; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: 30px 64px; align-items: center; max-width: 1360px; }
 
 .hub-brand { grid-area: brand; display: flex; align-items: center; gap: 11px; color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: -.04em; }
 .hub-brand .brand-mark { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid rgba(86,217,245,.38); border-radius: 9px; color: var(--cyan); font: 500 13px var(--mono); box-shadow: inset 0 0 16px rgba(86,217,245,.08); }

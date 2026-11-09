@@ -21,6 +21,8 @@ a { color: inherit; text-decoration: none; }
 button { font: inherit; }
 ::selection { color: #051018; background: var(--cyan); }
 .container { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+/* 宽视口（缩小浏览器视图/大屏）：板块随视口变宽，不再原地缩小、两侧留白 */
+@media (min-width: 1680px) { .container { width: min(calc(100% - 560px), 1840px); } }
 .site-header { position: absolute; z-index: 5; top: 0; left: 0; width: 100%; border-bottom: 1px solid rgba(160,190,215,.09); }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
 .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 16px; font-weight: 800; letter-spacing: -.04em; }
