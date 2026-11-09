@@ -13,6 +13,8 @@
         const el = entry.target as HTMLElement;
         observer.unobserve(el);
         el.dataset.revealState = 'revealed';
+        // The cinematic stage owns project transforms on desktop.
+        if (el.closest('#projects') && document.documentElement.dataset.cinematic) continue;
         if (el.contains(document.activeElement) || preference.matches) continue;
         const animation = el.animate([
           { opacity: .35, transform: 'translateY(14px)' },

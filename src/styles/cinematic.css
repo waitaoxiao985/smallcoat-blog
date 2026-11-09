@@ -1,0 +1,34 @@
+.project-controls, .scroll-cue, .project-open { display: none; }
+.project-arrow svg { width: 18px; height: 18px; }
+
+@media (min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference) {
+  html[data-cinematic] .hero-sequence { height: 165svh; }
+  html[data-cinematic] .hero { position: sticky; top: 0; height: 100svh; min-height: 0; padding: 100px 0 70px; }
+  html[data-cinematic] .hero-content { max-width: 1120px; transform-origin: left center; will-change: transform, opacity; }
+  html[data-cinematic] .hero h1 { font-size: clamp(90px, 12vw, 172px); }
+  html[data-cinematic] .scroll-cue { display: block; position: absolute; right: 5vw; bottom: 35px; color: var(--muted); font: 10px var(--mono); letter-spacing: .15em; }
+  html[data-cinematic] #projects { position: relative; height: 300svh; padding: 0; border: 0; }
+  html[data-cinematic] .projects-stage { position: sticky; top: 0; display: flex; align-items: center; height: 100svh; overflow: clip; background: radial-gradient(ellipse at 80% 45%, rgba(21,184,220,.13), transparent 55%), var(--bg); }
+  html[data-cinematic] .projects-stage::before { content: ''; position: absolute; left: 0; top: 0; height: 2px; width: 100%; background: var(--cyan); transform: scaleX(var(--scene-progress, 0)); transform-origin: left; opacity: .6; }
+  html[data-cinematic] .projects-stage > .container { position: relative; }
+  html[data-cinematic] #projects .section-heading { margin-bottom: 35px; }
+  html[data-cinematic] .project-list { position: relative; display: block; height: clamp(310px, 47svh, 510px); border: 0; perspective: 1100px; }
+  html[data-cinematic] .project { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 38px 48px; border: 1px solid rgba(86,217,245,.22); border-radius: 4px; background: linear-gradient(110deg, #0c1723 40%, #102937); transform-origin: center; will-change: transform, opacity; }
+  html[data-cinematic] .project + .project { border-left: 1px solid rgba(86,217,245,.22); }
+  html[data-cinematic] .project-top { position: absolute; top: 28px; left: 48px; right: 35px; }
+  html[data-cinematic] .project-top > span:first-child { font-size: 11px; letter-spacing: .16em; }
+  html[data-cinematic] .project-symbol { font-size: 24px; }
+  html[data-cinematic] .project-title { position: relative; margin: 24px 0 15px; font-size: clamp(37px, 5.6vw, 80px); letter-spacing: -.06em; line-height: 1.1; }
+  html[data-cinematic] .project-desc { max-width: 70%; min-height: 0; font-size: 16px; line-height: 1.8; }
+  html[data-cinematic] .project-tag { color: var(--cyan); font-size: 11px; letter-spacing: .1em; }
+  html[data-cinematic] .project-open { display: block; position: absolute; right: 35px; bottom: 28px; color: var(--text); font-size: 12px; }
+  html[data-cinematic] .project-arrow { display: none; }
+  html[data-cinematic] .project:focus-visible { outline: 2px solid var(--cyan); outline-offset: 5px; }
+  html[data-cinematic] .project-controls { display: flex; align-items: center; gap: 13px; margin-top: 24px; }
+  html[data-cinematic] .project-controls button { min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); background: transparent; font-size: 11px; cursor: pointer; }
+  html[data-cinematic] .project-controls button[aria-pressed="true"] { color: var(--cyan); border-color: rgba(86,217,245,.6); background: rgba(86,217,245,.06); }
+  html[data-cinematic] .project-controls button span { margin-right: 7px; font-family: var(--mono); }
+  html[data-cinematic] .project-position { margin-right: auto; color: var(--cyan); font: 12px var(--mono); }
+  html[data-cinematic] .skip-stage { margin-left: 12px; padding: 12px 0; color: var(--muted); font-size: 11px; }
+  html[data-cinematic] .skip-stage:hover { color: var(--cyan); }
+}

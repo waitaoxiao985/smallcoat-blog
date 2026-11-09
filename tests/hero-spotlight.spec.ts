@@ -12,7 +12,7 @@ test('desktop spotlight follows mouse and fades on exit without blocking links',
   await expect.poll(() => light.evaluate(el => getComputedStyle(el).transform)).not.toBe(first);
   expect(await light.evaluate(el => getComputedStyle(el).pointerEvents)).toBe('none');
   await page.screenshot({ path: 'test-results/hero-spotlight.png' });
-  await page.mouse.move(800, 710);
+  await page.mouse.move(800, 10);
   await expect(page.locator('.hero')).not.toHaveAttribute('data-spotlight-active');
   await page.getByRole('link', { name: '探索我的项目' }).click();
   await expect(page).toHaveURL(/#projects$/);
