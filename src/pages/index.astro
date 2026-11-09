@@ -6,8 +6,11 @@ import HubController from '../components/HubController.astro';
 import CinematicScroll from '../components/CinematicScroll.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
 import ArticlesAccordion from '../components/ArticlesAccordion.astro';
+import DecodeBar from '../components/DecodeBar.astro';
+import WhoamiTerminal from '../components/WhoamiTerminal.astro';
 import { getCollection } from 'astro:content';
 import '../styles/hub.css';
+import '../styles/widgets.css';
 
 const projects = [
   { name: 'SecGuard', description: '轻量级主机安全监控平台，探索 SIEM / XDR 的实践。', tech: 'JAVA · SECURITY', href: 'https://github.com/waitaoxiao985/SecGuard', number: '01' },
@@ -75,6 +78,7 @@ const entries = [
       <div class="projects-stage">
         <div class="container">
           <div class="section-heading"><div><div class="section-kicker">Selected work / 01—03</div><h2 class="section-title">正在构建的东西</h2></div><div class="section-note">一些实践，也是一段段学习记录。</div></div>
+          <div class="build-log" aria-hidden="true"><span class="build-log-tag">BUILD LOG</span><div class="build-log-screen"><span class="build-log-line">$ ./build.sh SecGuard --target=host</span><span class="build-log-line">[OK] SIEM 规则引擎编译通过 · 2.4s</span><span class="build-log-line">$ ./deploy.sh Cyber_Platform --env=prod</span><span class="build-log-line">[OK] CTF 平台题目同步完成 · 128/128</span><span class="build-log-line">$ ./scan.sh --daily --site=smallcoat.blog</span><span class="build-log-line">[OK] 未发现漏洞 · 继续挖洞学习</span></div></div>
           <div class="project-list">
             {projects.map((project) => (
               <a class="project" href={project.href} target="_blank" rel="noreferrer">
@@ -99,6 +103,7 @@ const entries = [
     <section class="section hub-panel" id="articles" data-hub-panel="articles" data-hub-label="学习记录" hidden tabindex="-1" aria-label="学习记录">
       <div class="container">
         <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title"><button type="button" class="title-toggle" data-articles-gate aria-controls="week-list">网络安全实战学习记录</button></h2></div><div class="section-note">点击标题展开周目录 · 4 周 · {posts.length} 篇</div></div>
+        <div class="decode-bar" aria-hidden="true"><span class="decode-prefix">&gt; DECRYPT</span><span class="decode-text" data-decode-text>LEARNING LOG · 28 FILES · 4 WEEKS · ACCESS GRANTED</span></div>
         <div class="week-list" id="week-list" data-articles-weeks>
           {weeks.map((group) => <section class="week-group" aria-labelledby={`week-${group.week}`}>
             <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}><button type="button" class="week-toggle" data-week-toggle aria-controls={`week-articles-${group.week}`}>{group.label}</button></h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
@@ -112,7 +117,19 @@ const entries = [
 
     <section class="section hub-panel" id="about" data-hub-panel="about" data-hub-label="关于我" hidden tabindex="-1" aria-label="关于我">
       <div class="container about">
-        <div><div class="section-kicker">About / 你好</div><h2 class="about-title">关于我</h2></div>
+        <div><div class="section-kicker">About / 你好</div><h2 class="about-title">关于我</h2>
+          <div class="whoami-term" data-whoami aria-hidden="true">
+            <div class="whoami-bar"><span class="whoami-dot"></span><span class="whoami-dot"></span><span class="whoami-dot"></span><span class="whoami-title">whoami — zsh</span></div>
+            <div class="whoami-body">
+              <p data-line><span class="whoami-prompt">$</span><span class="whoami-typed">whoami</span></p>
+              <p data-line><span class="whoami-typed">SmalLCoat · 网络空间安全专业在读</span></p>
+              <p data-line><span class="whoami-prompt">$</span><span class="whoami-typed">cat focus.txt</span></p>
+              <p data-line><span class="whoami-typed">Python 深入中 · Web 安全 · CTF</span></p>
+              <p data-line><span class="whoami-prompt">$</span><span class="whoami-typed">./status --now</span></p>
+              <p data-line><span class="whoami-typed">[OK] 学习进度 Day 28 / ∞ · 保持好奇</span></p>
+            </div>
+          </div>
+        </div>
         <div class="about-copy">
           <p>你好，我是 <strong>SmalLCoat</strong>，一名网络空间安全专业的大学生。</p>
           <p>学习过 C、Java、PHP 和 Python，目前正在深入学习 Python。我会在这里记录编程实践与学习心得，分享网络安全方向的探索与成长。</p>
@@ -126,5 +143,7 @@ const entries = [
   <CinematicScroll />
   <ScrollReveal />
   <ArticlesAccordion />
+  <DecodeBar />
+  <WhoamiTerminal />
   <HubController />
 </BaseLayout>

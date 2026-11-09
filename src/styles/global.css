@@ -2,13 +2,13 @@
 
 :root {
   color-scheme: dark;
-  --bg: #070b12;
-  --panel: #0d1420;
-  --panel-soft: #101a28;
-  --line: rgba(148, 182, 210, .13);
+  --bg: #150d26;
+  --panel: #1c1233;
+  --panel-soft: #201540;
+  --line: rgba(183, 168, 226, .15);
   --text: #e9f1f8;
-  --muted: #91a3b5;
-  --subtle: #63778a;
+  --muted: #9b93b8;
+  --subtle: #7a7099;
   --cyan: #56d9f5;
   --cyan-strong: #15b8dc;
   --mono: 'DM Mono', monospace;
@@ -40,7 +40,7 @@ button { font: inherit; }
   15%, 70% { opacity: var(--sweep-opacity); }
   85%, 100% { transform: translate3d(0,500%,0); opacity: 0; }
 }
-.hero-glow { position: absolute; z-index: -1; top: 20%; right: 9%; width: 310px; height: 310px; border-radius: 50%; background: rgba(16,178,218,.1); filter: blur(100px); animation: breathe 7s ease-in-out infinite alternate; }
+.hero-glow { position: absolute; z-index: -1; top: 20%; right: 9%; width: 310px; height: 310px; border-radius: 50%; background: rgba(139,92,246,.16); filter: blur(100px); animation: breathe 7s ease-in-out infinite alternate; }
 @keyframes breathe { to { opacity: .45; transform: scale(1.24); } }
 .hero-content { max-width: 760px; }
 .eyebrow { display: flex; align-items: center; gap: 10px; color: #94afc1; font: 11px var(--mono); letter-spacing: .15em; text-transform: uppercase; }

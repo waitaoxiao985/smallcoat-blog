@@ -1,0 +1,27 @@
+<script>
+  // 学习记录板块的解码扫描条：周期性把目标文本从乱码逐字符解出。
+  // 渐进增强：无 JS / 偏好减少动效时显示静态文本。
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const el = document.querySelector<HTMLElement>('[data-decode-text]');
+
+  if (el && !reduce.matches) {
+    const target = el.textContent?.trim() || '';
+    const glyphs = '▓▒░<>/\\|+=*#%01';
+
+    const scramble = () => {
+      // 板块隐藏（display:none）或页面不可见时跳过本轮。
+      if (document.hidden || el.offsetParent === null) return;
+      let frame = 0;
+      const total = Math.ceil(target.length / 2) + 6;
+      const run = () => {
+        frame += 1;
+        const reveal = Math.floor((frame / total) * target.length);
+        el.textContent = target.split('').map((ch, i) => (ch === ' ' || ch === '·' || i < reveal ? ch : glyphs[Math.floor(Math.random() * glyphs.length)])).join('');
+        if (frame < total) window.setTimeout(run, 26);
+      };
+      run();
+    };
+
+    window.setInterval(scramble, 4200);
+  }
+</script>

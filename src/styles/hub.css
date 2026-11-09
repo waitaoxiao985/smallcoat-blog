@@ -6,10 +6,10 @@
 }
 .hub::before {
   position: absolute; z-index: -2; inset: 0; content: '';
-  background: radial-gradient(ellipse at 76% 42%, rgba(11,117,155,.2), transparent 38%), radial-gradient(ellipse at 22% 78%, rgba(14,71,114,.12), transparent 42%), linear-gradient(180deg,#080d15 0%,#070b12 92%);
+  background: radial-gradient(ellipse at 76% 42%, rgba(124,58,237,.22), transparent 38%), radial-gradient(ellipse at 22% 78%, rgba(88,28,180,.16), transparent 42%), linear-gradient(180deg,#190f33 0%,#150d26 92%);
 }
 .hub .hero-grid { position: absolute; z-index: -1; inset: 0; opacity: .42; pointer-events: none; background-image: linear-gradient(rgba(66,168,197,.085) 1px, transparent 1px), linear-gradient(90deg, rgba(66,168,197,.085) 1px, transparent 1px); background-size: 56px 56px; mask-image: linear-gradient(180deg, transparent 2%, #000 22%, #000 78%, transparent 98%); transform: perspective(600px) rotateX(7deg) scale(1.12); transform-origin: center 72%; }
-.hub .hero-glow { position: absolute; z-index: -1; top: 18%; right: 6%; width: 300px; height: 300px; border-radius: 50%; background: rgba(16,178,218,.1); filter: blur(100px); animation: breathe 7s ease-in-out infinite alternate; }
+.hub .hero-glow { position: absolute; z-index: -1; top: 18%; right: 6%; width: 300px; height: 300px; border-radius: 50%; background: rgba(139,92,246,.16); filter: blur(100px); animation: breathe 7s ease-in-out infinite alternate; }
 
 .hub-inner { display: grid; grid-template-areas: "brand brand" "copy art"; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: 30px 64px; align-items: center; max-width: 1360px; }
 
@@ -44,7 +44,7 @@
 .hub-art { grid-area: art; justify-self: end; }
 
 /* 板块顶栏 */
-.panel-bar { position: fixed; z-index: 20; inset: 0 0 auto; background: rgba(7,11,18,.96); border-bottom: 1px solid var(--line); }
+.panel-bar { position: fixed; z-index: 20; inset: 0 0 auto; background: rgba(21,13,38,.96); border-bottom: 1px solid var(--line); }
 .panel-bar-inner { display: flex; align-items: center; gap: 18px; height: 56px; }
 .panel-back { min-height: 44px; padding: 0 12px; border: 0; border-radius: 5px; background: transparent; color: #b9cad8; font-size: 12.5px; cursor: pointer; transition: color .18s, background .18s; }
 .panel-back:hover { color: var(--cyan); background: rgba(86,217,245,.06); }

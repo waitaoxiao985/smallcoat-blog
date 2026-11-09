@@ -9,8 +9,8 @@
   html[data-cinematic] .projects-stage > .container { position: relative; }
   html[data-cinematic] #projects .section-heading { margin-bottom: 35px; }
   html[data-cinematic] .project-list { position: relative; display: block; height: clamp(310px, 47svh, 510px); border: 0; perspective: 1100px; }
-  html[data-cinematic] .project { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 38px 48px; border: 1px solid rgba(86,217,245,.22); border-radius: 4px; background: linear-gradient(110deg, #0c1723 40%, #102937); transform-origin: center; will-change: transform, opacity; }
-  html[data-cinematic] .project + .project { border-left: 1px solid rgba(86,217,245,.22); }
+  html[data-cinematic] .project { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 38px 48px; border: 1px solid rgba(139,92,246,.28); border-radius: 4px; background: linear-gradient(110deg, #170f2e 40%, #1f1340); transform-origin: center; will-change: transform, opacity; }
+  html[data-cinematic] .project + .project { border-left: 1px solid rgba(139,92,246,.28); }
   html[data-cinematic] .project-top { position: absolute; top: 28px; left: 48px; right: 35px; }
   html[data-cinematic] .project-top > span:first-child { font-size: 11px; letter-spacing: .16em; }
   html[data-cinematic] .project-symbol { font-size: 24px; }

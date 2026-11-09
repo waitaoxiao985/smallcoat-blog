@@ -1,0 +1,43 @@
+<script>
+  // 关于我板块的 whoami 终端：进入视口后逐行打字机输出。
+  // 渐进增强：无 JS / 偏好减少动效时显示完整静态文本。
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const term = document.querySelector<HTMLElement>('[data-whoami]');
+
+  if (term && !reduce.matches && typeof IntersectionObserver !== 'undefined') {
+    const lines = [...term.querySelectorAll<HTMLElement>('[data-line]')];
+    const typed = lines.map((line) => line.querySelector<HTMLElement>('.whoami-typed'));
+    const original = typed.map((t) => t?.textContent ?? '');
+
+    // 脚本生效：先隐藏全部行，等进入视口再逐行打字。
+    lines.forEach((line) => { line.style.visibility = 'hidden'; });
+
+    const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+    const typeAll = async () => {
+      const caret = document.createElement('span');
+      caret.className = 'whoami-caret';
+      for (let i = 0; i < lines.length; i += 1) {
+        const target = typed[i];
+        if (!target) continue;
+        lines[i].style.visibility = 'visible';
+        target.textContent = '';
+        target.appendChild(caret);
+        for (const ch of original[i]) {
+          target.insertBefore(document.createTextNode(ch), caret);
+          await wait(26);
+        }
+        await wait(240);
+      }
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.disconnect();
+        typeAll();
+      }
+    }, { threshold: .2 });
+    observer.observe(term);
+  }
+</script>

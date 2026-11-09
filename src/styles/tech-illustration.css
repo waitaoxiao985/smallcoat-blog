@@ -5,7 +5,7 @@
 .ti-frame {
   position: relative; overflow: hidden;
   border: 1px solid rgba(86,217,245,.22); border-radius: 3px;
-  background: linear-gradient(152deg, rgba(13,25,38,.97), rgba(7,14,23,.94));
+  background: linear-gradient(152deg, rgba(28,18,52,.97), rgba(16,10,32,.94));
   box-shadow: 0 40px 90px -50px #000, inset 0 0 70px rgba(21,184,220,.06);
   animation: ti-float 7.5s ease-in-out infinite;
 }
