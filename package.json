@@ -1,0 +1,16 @@
+{
+  "name": "smallcoat-blog",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "astro": "^5.7.0",
+    "typescript": "^5.8.2"
+  }
+}

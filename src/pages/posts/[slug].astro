@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<BaseLayout>
+  <main class="section" style="padding-top: 130px; min-height: 80vh">
+    <article class="container" style="max-width: 760px">
+      <a class="text-link" href="/#articles">← 返回首页</a>
+      <div class="section-kicker" style="margin-top: 34px">{post.data.pubDate.toLocaleDateString('zh-CN')} · {post.data.tags.join(' / ')}</div>
+      <h1 style="font-size: clamp(36px, 7vw, 58px); letter-spacing: -.05em; line-height: 1.15">{post.data.title}</h1>
+      <p style="color: var(--muted); line-height: 1.8">{post.data.description}</p>
+      <div class="article-body"><Content /></div>
+    </article>
+  </main>
+  <style>
+    .article-body { margin-top: 40px; color: #c0ccd7; font-size: 16px; line-height: 1.9; }
+    .article-body :global(h2), .article-body :global(h3) { margin-top: 2em; color: var(--text); letter-spacing: -.03em; }
+    .article-body :global(a) { color: var(--cyan); text-decoration: underline; text-underline-offset: 3px; }
+    .article-body :global(pre) { overflow-x: auto; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: #0a1019; font: 13px/1.7 var(--mono); }
+    .article-body :global(code) { font-family: var(--mono); }
+  </style>
+</BaseLayout>

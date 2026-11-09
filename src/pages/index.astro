@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = [
+  { name: 'SecGuard', description: '轻量级主机安全监控平台，探索 SIEM / XDR 的实践。', tech: 'JAVA · SECURITY', href: 'https://github.com/waitaoxiao985/SecGuard', number: '01' },
+  { name: 'Cyber_Platform', description: '自建 CTF 题库网站，记录平台构建与安全学习。', tech: 'TYPESCRIPT · CTF', href: 'https://github.com/waitaoxiao985/Cyber_Platform', number: '02' },
+  { name: 'CyberSpace_Notes', description: '持续整理网络空间安全方向的学习笔记。', tech: 'NOTES · SECURITY', href: 'https://github.com/waitaoxiao985/CyberSpace_Notes', number: '03' },
+];
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
+---
+<BaseLayout>
+  <header class="site-header">
+    <nav class="nav container" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="SmalLCoat 首页"><span class="brand-mark">SC</span><span>SmalLCoat</span></a>
+      <div class="nav-links"><a href="#projects">项目</a><a href="#about">关于</a><a class="nav-github" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">GitHub ↗</a></div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-grid" aria-hidden="true"></div><div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-content container">
+        <div class="eyebrow">个人技术博客 · NETWORK & CODE</div>
+        <h1>SmalL<span>Coat</span></h1>
+        <p class="hero-copy">以代码为笔，探索技术的无限可能。<br /><strong>记录编程实践，也记录网络安全学习的每一步。</strong></p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#projects">探索我的项目 <Fragment set:html={arrow} /></a>
+          <a class="button button-ghost" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">访问 GitHub ↗</a>
+        </div>
+        <div class="hero-meta"><span>FOCUS / CYBERSECURITY</span><span>LEARNING / PYTHON</span><span>BUILDING / IN PUBLIC</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-heading"><div><div class="section-kicker">Selected work / 01—03</div><h2 class="section-title">正在构建的东西</h2></div><div class="section-note">一些实践，也是一段段学习记录。</div></div>
+        <div class="project-list">
+          {projects.map((project) => (
+            <a class="project" href={project.href} target="_blank" rel="noreferrer">
+              <div class="project-top"><span>PROJECT / {project.number}</span><span class="project-symbol">↗</span></div>
+              <h3 class="project-title">{project.name}</h3>
+              <p class="project-desc">{project.description}</p>
+              <span class="project-tag">{project.tech}</span>
+              <span class="project-arrow" set:html={arrow} />
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container about">
+        <div><div class="section-kicker">About / 你好</div><h2 class="about-title">关于我</h2></div>
+        <div class="about-copy">
+          <p>你好，我是 <strong>SmalLCoat</strong>，一名网络空间安全专业的大学生。</p>
+          <p>学习过 C、Java、PHP 和 Python，目前正在深入学习 Python。我会在这里记录编程实践与学习心得，分享网络安全方向的探索与成长。</p>
+          <div class="about-links"><a class="text-link" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">GITHUB / @waitaoxiao985 ↗</a></div>
+        </div>
+      </div>
+    </section>
+
+    {posts.length > 0 && <section class="section" id="articles">
+      <div class="container">
+        <div class="section-heading"><div><div class="section-kicker">Writing / Notes</div><h2 class="section-title">最近文章</h2></div><div class="section-note">Markdown 驱动，持续更新。</div></div>
+        <div class="project-list">
+          {posts.map((post) => <a class="project" href={`/posts/${post.id}/`}><div class="project-top"><span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span><span class="project-symbol">↗</span></div><h3 class="project-title">{post.data.title}</h3><p class="project-desc">{post.data.description}</p><span class="project-tag">{post.data.tags.join(' · ')}</span></a>)}
+        </div>
+      </div>
+    </section>}
+  </main>
+
+  <footer class="site-footer"><div class="container footer-inner"><span>© {new Date().getFullYear()} SmalLCoat. Built with Astro.</span><span class="footer-mark">STAY CURIOUS · KEEP BUILDING</span></div></footer>
+</BaseLayout>
