@@ -5,6 +5,7 @@ import TechIllustration from '../components/TechIllustration.astro';
 import HubController from '../components/HubController.astro';
 import CinematicScroll from '../components/CinematicScroll.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
+import ArticlesAccordion from '../components/ArticlesAccordion.astro';
 import { getCollection } from 'astro:content';
 import '../styles/hub.css';
 
@@ -97,11 +98,11 @@ const entries = [
 
     <section class="section hub-panel" id="articles" data-hub-panel="articles" data-hub-label="学习记录" hidden tabindex="-1" aria-label="学习记录">
       <div class="container">
-        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title">网络安全实战学习记录</h2></div><div class="section-note">4 周 · {posts.length} 篇 · 按学习顺序整理</div></div>
-        <div class="week-list">
+        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title"><button type="button" class="title-toggle" data-articles-gate aria-controls="week-list">网络安全实战学习记录</button></h2></div><div class="section-note">点击标题展开周目录 · 4 周 · {posts.length} 篇</div></div>
+        <div class="week-list" id="week-list" data-articles-weeks>
           {weeks.map((group) => <section class="week-group" aria-labelledby={`week-${group.week}`}>
-            <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}>{group.label}</h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
-            <div class="article-list">
+            <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}><button type="button" class="week-toggle" data-week-toggle aria-controls={`week-articles-${group.week}`}>{group.label}</button></h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
+            <div class="article-list" id={`week-articles-${group.week}`} data-week-articles>
               {group.posts.map((post) => <a class="article-row" href={`/posts/${post.id}/`}><span class="article-day">{post.id.replace('day-', 'DAY ')}</span><span class="article-main"><strong>{post.data.title}</strong><small>{post.data.description}</small></span><span class="article-arrow">↗</span></a>)}
             </div>
           </section>)}
@@ -124,5 +125,6 @@ const entries = [
   <footer class="site-footer"><div class="container footer-inner"><span>© {new Date().getFullYear()} SmalLCoat. Built with Astro.</span><span class="footer-mark">STAY CURIOUS · KEEP BUILDING</span></div></footer>
   <CinematicScroll />
   <ScrollReveal />
+  <ArticlesAccordion />
   <HubController />
 </BaseLayout>

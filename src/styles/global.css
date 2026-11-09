@@ -87,6 +87,13 @@ button { font: inherit; }
 .week-number { color: var(--cyan); font: 10px var(--mono); letter-spacing: .12em; }
 .week-heading h3 { margin: 9px 0; font-size: 18px; letter-spacing: -.03em; }
 .week-count { color: var(--subtle); font: 10px var(--mono); }
+/* 文章目录手风琴：标题 → 周 → 文章行 */
+.title-toggle, .week-toggle { display: inline-flex; gap: 10px; align-items: center; padding: 2px 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; transition: color .18s; }
+.title-toggle::after, .week-toggle::after { content: ''; width: 7px; height: 7px; margin-left: 2px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .2s; }
+.title-toggle[aria-expanded="true"]::after, .week-toggle[aria-expanded="true"]::after { transform: rotate(45deg); }
+.title-toggle:hover, .week-toggle:hover { color: var(--cyan); }
+.title-toggle:focus-visible, .week-toggle:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+.week-toggle { min-height: 44px; }
 .article-list { border-top: 1px solid rgba(148,182,210,.08); }
 .article-row { display: grid; grid-template-columns: 75px minmax(0, 1fr) 18px; gap: 14px; align-items: center; padding: 13px 7px; border-bottom: 1px solid rgba(148,182,210,.08); transition: background .18s ease; }
 .article-row:hover { background: rgba(86,217,245,.035); }

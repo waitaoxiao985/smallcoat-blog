@@ -1,0 +1,57 @@
+<script>
+  // 学习记录板块的三级手风琴：标题 → 周分组 → 文章行。
+  // 渐进增强：无 JS 时内容默认全展开，脚本初始化后才折叠。
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const gate = document.querySelector<HTMLButtonElement>('[data-articles-gate]');
+  const weeks = document.querySelector<HTMLElement>('[data-articles-weeks]');
+  const toggles = [...document.querySelectorAll<HTMLButtonElement>('[data-week-toggle]')];
+
+  const panelFor = (button: HTMLButtonElement) =>
+    document.getElementById(button.getAttribute('aria-controls') || '');
+
+  const spread = (container: HTMLElement, rows: Element[]) => {
+    if (reduce.matches || typeof Element.prototype.animate !== 'function') return;
+    rows.forEach((row, index) => {
+      row.animate(
+        [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 320, delay: index * 45, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' },
+      );
+    });
+  };
+
+  if (gate && weeks && toggles.length) {
+    // 初始折叠：标题收起 → 周、文章都看不到。
+    gate.setAttribute('aria-expanded', 'false');
+    weeks.hidden = true;
+    toggles.forEach((button) => {
+      button.setAttribute('aria-expanded', 'false');
+      const panel = panelFor(button);
+      if (panel) panel.hidden = true;
+    });
+
+    gate.addEventListener('click', () => {
+      const open = gate.getAttribute('aria-expanded') === 'true';
+      gate.setAttribute('aria-expanded', String(!open));
+      weeks.hidden = open;
+      if (!open) {
+        spread(weeks, [...weeks.querySelectorAll(':scope > .week-group')]);
+      } else {
+        // 收起即重置：下次展开从全收起状态开始，保持一级一级点开。
+        toggles.forEach((button) => {
+          button.setAttribute('aria-expanded', 'false');
+          const panel = panelFor(button);
+          if (panel) panel.hidden = true;
+        });
+      }
+    });
+
+    toggles.forEach((button) => button.addEventListener('click', () => {
+      const panel = panelFor(button);
+      if (!panel) return;
+      const open = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+      if (!open) spread(panel, [...panel.querySelectorAll('.article-row')]);
+    }));
+  }
+</script>
