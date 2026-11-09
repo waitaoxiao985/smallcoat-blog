@@ -1,0 +1,53 @@
+<script>
+  // Content is visible by default: no CSS hiding, even when scripts fail.
+  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  const targets = [...document.querySelectorAll<HTMLElement>(
+    '#projects .section-heading, #projects .project, #about .about > div, #articles .section-heading, #articles .week-heading, #articles .article-list',
+  )];
+
+  if (!preference.matches && typeof IntersectionObserver === 'function' && typeof Element.prototype.animate === 'function') {
+    const animations = new Map<HTMLElement, Animation>();
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        observer.unobserve(el);
+        el.dataset.revealState = 'revealed';
+        if (el.contains(document.activeElement) || preference.matches) continue;
+        const animation = el.animate([
+          { opacity: .35, transform: 'translateY(14px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+        ], {
+          duration: 480,
+          delay: Number(el.dataset.revealDelay || 0),
+          easing: 'cubic-bezier(.2,.7,.2,1)',
+        });
+        animations.set(el, animation);
+        animation.finished.then(() => animations.delete(el), () => animations.delete(el));
+      }
+    }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
+
+    targets.forEach(el => {
+      el.dataset.revealState = 'pending';
+      if (el.matches('.project')) {
+        const siblings = [...el.parentElement!.querySelectorAll('.project')];
+        el.dataset.revealDelay = String(siblings.indexOf(el) * 70);
+      }
+      observer.observe(el);
+      // Keyboard users should never have to wait for a decorative effect.
+      el.addEventListener('focusin', () => {
+        observer.unobserve(el);
+        animations.get(el)?.cancel();
+        el.dataset.revealState = 'revealed';
+      });
+    });
+
+    preference.addEventListener('change', () => {
+      if (!preference.matches) return;
+      observer.disconnect();
+      animations.forEach(animation => animation.cancel());
+      animations.clear();
+      targets.forEach(el => { el.dataset.revealState = 'revealed'; });
+    });
+  }
+</script>
