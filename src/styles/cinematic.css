@@ -1,14 +1,10 @@
+/* 项目滚动场景（仅桌面 + 接受动态效果时） */
 .project-controls, .scroll-cue, .project-open { display: none; }
 .project-arrow svg { width: 18px; height: 18px; }
 
 @media (min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference) {
-  html[data-cinematic] .hero-sequence { height: 165svh; }
-  html[data-cinematic] .hero { position: sticky; top: 0; height: 100svh; min-height: 0; padding: 100px 0 70px; }
-  html[data-cinematic] .hero-content { max-width: 1120px; transform-origin: left center; will-change: transform, opacity; }
-  html[data-cinematic] .hero h1 { font-size: clamp(90px, 12vw, 172px); }
-  html[data-cinematic] .scroll-cue { display: block; position: absolute; right: 5vw; bottom: 35px; color: var(--muted); font: 10px var(--mono); letter-spacing: .15em; }
   html[data-cinematic] #projects { position: relative; height: 300svh; padding: 0; border: 0; }
-  html[data-cinematic] .projects-stage { position: sticky; top: 0; display: flex; align-items: center; height: 100svh; overflow: clip; background: radial-gradient(ellipse at 80% 45%, rgba(21,184,220,.13), transparent 55%), var(--bg); }
+  html[data-cinematic] .projects-stage { position: sticky; top: 56px; display: flex; align-items: center; height: calc(100svh - 56px); overflow: clip; background: radial-gradient(ellipse at 80% 45%, rgba(21,184,220,.13), transparent 55%), var(--bg); }
   html[data-cinematic] .projects-stage::before { content: ''; position: absolute; left: 0; top: 0; height: 2px; width: 100%; background: var(--cyan); transform: scaleX(var(--scene-progress, 0)); transform-origin: left; opacity: .6; }
   html[data-cinematic] .projects-stage > .container { position: relative; }
   html[data-cinematic] #projects .section-heading { margin-bottom: 35px; }

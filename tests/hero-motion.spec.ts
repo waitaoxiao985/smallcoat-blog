@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('hero light sweep moves behind readable, clickable content', async ({ page }) => {
+test('entry screen keeps the animated grid sweep behind readable content', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   const light = await page.locator('.hero-grid').evaluate(el => {
@@ -19,26 +19,27 @@ test('hero light sweep moves behind readable, clickable content', async ({ page 
     return { first, second: getComputedStyle(el, '::after').transform };
   });
   expect(frames.first).not.toBe(frames.second);
-  await page.screenshot({ path: 'test-results/hero-desktop.png' });
+  await page.screenshot({ path: 'test-results/hub-grid.png' });
   await expect(page.getByRole('heading', { name: 'SmalLCoat', exact: true })).toBeVisible();
-  await page.getByRole('link', { name: '探索我的项目' }).click();
+  await page.locator('[data-hub-link="projects"]').click();
   await expect(page).toHaveURL(/#projects$/);
 });
 
-test('reduced motion leaves a static grid with no light sweep', async ({ page }) => {
+test('reduced motion leaves the entry grid static', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const motion = await page.locator('.hero-grid').evaluate(el => ({
     sweep: getComputedStyle(el, '::after').animationName,
-    glow: getComputedStyle(document.querySelector('.hero-glow')!).animationName,
+    glow: getComputedStyle(document.querySelector('.hub .hero-glow')!).animationName,
   }));
   expect(motion).toEqual({ sweep: 'none', glow: 'none' });
 });
 
-test('mobile layout fits the viewport and keeps all article links', async ({ page }) => {
+test('mobile entry screen fits and reading routes stay clean', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('[data-hub-link="articles"]').click();
   await expect(page.locator('.article-row')).toHaveCount(28);
   await page.goto('/posts/day-001/');
   await expect(page.locator('.hero-grid')).toHaveCount(0);

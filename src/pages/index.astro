@@ -1,10 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSpotlight from '../components/HeroSpotlight.astro';
-import NetworkVisual from '../components/NetworkVisual.astro';
-import ScrollReveal from '../components/ScrollReveal.astro';
+import TechIllustration from '../components/TechIllustration.astro';
+import HubController from '../components/HubController.astro';
 import CinematicScroll from '../components/CinematicScroll.astro';
+import ScrollReveal from '../components/ScrollReveal.astro';
 import { getCollection } from 'astro:content';
+import '../styles/hub.css';
 
 const projects = [
   { name: 'SecGuard', description: '轻量级主机安全监控平台，探索 SIEM / XDR 的实践。', tech: 'JAVA · SECURITY', href: 'https://github.com/waitaoxiao985/SecGuard', number: '01' },
@@ -18,74 +20,84 @@ const weeks = [1, 2, 3, 4].map((week) => ({
   posts: posts.filter((post) => post.data.tags.includes(`Week ${week}`)),
 }));
 const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
+const entries = [
+  { id: 'projects', num: '01', name: '项目', caption: `SELECTED WORK · 0${projects.length}` },
+  { id: 'articles', num: '02', name: '学习记录', caption: `LEARNING LOG · ${posts.length}` },
+  { id: 'about', num: '03', name: '关于我', caption: 'ABOUT · BIO' },
+];
 ---
 <BaseLayout>
-  <header class="site-header">
-    <nav class="nav container" aria-label="主导航">
-      <a class="brand" href="#top" aria-label="SmalLCoat 首页"><span class="brand-mark">SC</span><span>SmalLCoat</span></a>
-      <div class="nav-links"><a href="#projects">项目</a><a href="#about">关于</a><a class="nav-github" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">GitHub ↗</a></div>
-    </nav>
-  </header>
+  <noscript><style>.hub-panel[hidden]{display:block!important}.panel-bar{display:none!important}.site-footer{display:block!important}</style></noscript>
 
-  <main id="top">
-    <div class="hero-sequence">
-    <section class="hero">
-      <div class="hero-grid" aria-hidden="true"></div><div class="hero-glow" aria-hidden="true"></div>
+  <div class="hub-shell" id="top">
+    <section class="hub" aria-labelledby="hub-title">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-glow" aria-hidden="true"></div>
       <HeroSpotlight />
-      <NetworkVisual />
-      <div class="hero-content container">
-        <div class="eyebrow">个人技术博客 · NETWORK & CODE</div>
-        <h1>SmalL<span>Coat</span></h1>
-        <p class="hero-copy">以代码为笔，探索技术的无限可能。<br /><strong>记录编程实践，也记录网络安全学习的每一步。</strong></p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#projects">探索我的项目 <Fragment set:html={arrow} /></a>
-          <a class="button button-ghost" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">访问 GitHub ↗</a>
-        </div>
-        <div class="hero-meta"><span>FOCUS / CYBERSECURITY</span><span>LEARNING / PYTHON</span><span>BUILDING / IN PUBLIC</span></div>
-      </div>
-      <span class="scroll-cue" aria-hidden="true">SCROLL TO EXPLORE ↓</span>
-    </section>
-    </div>
-
-    <section class="section" id="projects">
-      <div class="projects-stage">
-      <div class="container">
-        <div class="section-heading"><div><div class="section-kicker">Selected work / 01—03</div><h2 class="section-title">正在构建的东西</h2></div><div class="section-note">一些实践，也是一段段学习记录。</div></div>
-        <div class="project-list">
-          {projects.map((project) => (
-            <a class="project" href={project.href} target="_blank" rel="noreferrer">
-              <div class="project-top"><span>PROJECT / {project.number}</span><span class="project-symbol">↗</span></div>
-              <h3 class="project-title">{project.name}</h3>
-              <p class="project-desc">{project.description}</p>
-              <span class="project-tag">{project.tech}</span>
-              <span class="project-open">查看 GitHub 项目 ↗</span>
-              <span class="project-arrow" set:html={arrow} />
+      <div class="hub-inner container">
+        <div class="hub-brand"><span class="brand-mark">SC</span><span>SmalLCoat</span><span class="hub-brand-tag">ENTRY / 00</span></div>
+        <div class="hub-copy">
+          <div class="eyebrow">个人技术博客 · NETWORK & CODE</div>
+          <h1 id="hub-title" tabindex="-1">SmalL<span>Coat</span></h1>
+          <p class="hub-tagline">以代码为笔，探索技术的无限可能。<br /><strong>记录编程实践，也记录网络安全学习的每一步。</strong></p>
+          <nav class="hub-nav" aria-label="选择板块">
+            {entries.map((entry) => (
+              <a class="hub-entry" href={`#${entry.id}`} data-hub-link={entry.id}>
+                <span class="hub-entry-num">{entry.num}</span>
+                <span class="hub-entry-body"><strong>{entry.name}</strong><small>{entry.caption}</small></span>
+                <span class="hub-entry-arrow">→</span>
+              </a>
+            ))}
+            <a class="hub-entry" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">
+              <span class="hub-entry-num">04</span>
+              <span class="hub-entry-body"><strong>GitHub</strong><small>OPEN SOURCE · @waitaoxiao985</small></span>
+              <span class="hub-entry-arrow">↗</span>
             </a>
-          ))}
+          </nav>
+          <p class="hub-hint">选择板块进入 · 按 ESC 返回入口</p>
         </div>
-        <nav class="project-controls" aria-label="项目场景切换">
-          <span class="project-position" aria-hidden="true">01 / 03</span>
-          {projects.map((project, index) => <button type="button" data-project-index={index} aria-label={`展示项目 ${index + 1}`}><span>{project.number}</span> {project.name}</button>)}
-          <a href="#about" class="skip-stage">跳过展示 ↓</a>
-        </nav>
+        <div class="hub-art"><TechIllustration /></div>
       </div>
+    </section>
+  </div>
+
+  <div class="panel-bar" hidden>
+    <div class="panel-bar-inner container">
+      <button type="button" class="panel-back">← 返回入口</button>
+      <span class="panel-label" aria-live="polite"></span>
+      <a class="panel-gh" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="hub-panels">
+    <section class="section hub-panel" id="projects" data-hub-panel="projects" data-hub-label="项目" hidden tabindex="-1" aria-label="项目">
+      <div class="projects-stage">
+        <div class="container">
+          <div class="section-heading"><div><div class="section-kicker">Selected work / 01—03</div><h2 class="section-title">正在构建的东西</h2></div><div class="section-note">一些实践，也是一段段学习记录。</div></div>
+          <div class="project-list">
+            {projects.map((project) => (
+              <a class="project" href={project.href} target="_blank" rel="noreferrer">
+                <div class="project-top"><span>PROJECT / {project.number}</span><span class="project-symbol">↗</span></div>
+                <h3 class="project-title">{project.name}</h3>
+                <p class="project-desc">{project.description}</p>
+                <span class="project-tag">{project.tech}</span>
+                <span class="project-open">查看 GitHub 项目 ↗</span>
+                <span class="project-arrow" set:html={arrow} />
+              </a>
+            ))}
+          </div>
+          <nav class="project-controls" aria-label="项目场景切换">
+            <span class="project-position" aria-hidden="true">01 / 03</span>
+            {projects.map((project, index) => <button type="button" data-project-index={index} aria-label={`展示项目 ${index + 1}`}><span>{project.number}</span> {project.name}</button>)}
+            <a href="#about" class="skip-stage" data-hub-link="about">跳过展示 →</a>
+          </nav>
+        </div>
       </div>
     </section>
 
-    <section class="section" id="about">
-      <div class="container about">
-        <div><div class="section-kicker">About / 你好</div><h2 class="about-title">关于我</h2></div>
-        <div class="about-copy">
-          <p>你好，我是 <strong>SmalLCoat</strong>，一名网络空间安全专业的大学生。</p>
-          <p>学习过 C、Java、PHP 和 Python，目前正在深入学习 Python。我会在这里记录编程实践与学习心得，分享网络安全方向的探索与成长。</p>
-          <div class="about-links"><a class="text-link" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">GITHUB / @waitaoxiao985 ↗</a></div>
-        </div>
-      </div>
-    </section>
-
-    {posts.length > 0 && <section class="section" id="articles">
+    <section class="section hub-panel" id="articles" data-hub-panel="articles" data-hub-label="学习记录" hidden tabindex="-1" aria-label="学习记录">
       <div class="container">
-        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title">网络安全实战学习记录</h2></div><div class="section-note">4 周 · 28 篇 · 按学习顺序整理</div></div>
+        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title">网络安全实战学习记录</h2></div><div class="section-note">4 周 · {posts.length} 篇 · 按学习顺序整理</div></div>
         <div class="week-list">
           {weeks.map((group) => <section class="week-group" aria-labelledby={`week-${group.week}`}>
             <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}>{group.label}</h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
@@ -95,10 +107,22 @@ const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
           </section>)}
         </div>
       </div>
-    </section>}
-  </main>
+    </section>
+
+    <section class="section hub-panel" id="about" data-hub-panel="about" data-hub-label="关于我" hidden tabindex="-1" aria-label="关于我">
+      <div class="container about">
+        <div><div class="section-kicker">About / 你好</div><h2 class="about-title">关于我</h2></div>
+        <div class="about-copy">
+          <p>你好，我是 <strong>SmalLCoat</strong>，一名网络空间安全专业的大学生。</p>
+          <p>学习过 C、Java、PHP 和 Python，目前正在深入学习 Python。我会在这里记录编程实践与学习心得，分享网络安全方向的探索与成长。</p>
+          <div class="about-links"><a class="text-link" href="https://github.com/waitaoxiao985" target="_blank" rel="noreferrer">GITHUB / @waitaoxiao985 ↗</a></div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <footer class="site-footer"><div class="container footer-inner"><span>© {new Date().getFullYear()} SmalLCoat. Built with Astro.</span><span class="footer-mark">STAY CURIOUS · KEEP BUILDING</span></div></footer>
   <CinematicScroll />
   <ScrollReveal />
+  <HubController />
 </BaseLayout>

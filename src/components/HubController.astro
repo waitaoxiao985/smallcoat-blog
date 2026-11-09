@@ -1,0 +1,68 @@
+<script>
+  // 首页入口控制台：点击板块进入，返回入口恢复；支持深链、浏览器返回与 Esc。
+  const shell = document.querySelector<HTMLElement>('.hub-shell');
+  const hub = document.querySelector<HTMLElement>('.hub');
+  const panels = [...document.querySelectorAll<HTMLElement>('[data-hub-panel]')];
+  const bar = document.querySelector<HTMLElement>('.panel-bar');
+  const label = document.querySelector<HTMLElement>('.panel-label');
+  const back = document.querySelector<HTMLButtonElement>('.panel-back');
+  const entries = [...document.querySelectorAll<HTMLAnchorElement>('[data-hub-link]')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+  const panelFor = (id: string) => panels.find(panel => panel.dataset.hubPanel === id);
+
+  function setState(id: string, push = false) {
+    const panel = panelFor(id);
+    document.documentElement.classList.toggle('hub-mode', Boolean(panel));
+    if (shell) shell.hidden = Boolean(panel);
+    panels.forEach(item => { item.hidden = item !== panel; });
+    if (bar) bar.hidden = !panel;
+    if (panel) {
+      if (label) label.textContent = panel.dataset.hubLabel || '';
+      if (push) history.pushState({ panel: id }, '', `#${id}`);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      panel.focus({ preventScroll: true });
+      if (!reduce.matches && typeof panel.animate === 'function') {
+        panel.animate(
+          [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 340, easing: 'cubic-bezier(.2,.7,.2,1)' },
+        );
+      }
+      window.dispatchEvent(new CustomEvent('hub:panelchange', { detail: id }));
+    } else {
+      if (push) history.pushState({}, '', location.pathname + location.search);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      entries[0]?.focus({ preventScroll: true });
+      window.dispatchEvent(new CustomEvent('hub:panelchange'));
+    }
+    // 让依赖布局的滚动场景（项目舞台）重新计算。
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  entries.forEach(entry => entry.addEventListener('click', event => {
+    event.preventDefault();
+    setState(entry.dataset.hubLink!, true);
+  }));
+  back?.addEventListener('click', () => setState('', true));
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && document.documentElement.classList.contains('hub-mode')) setState('', true);
+  });
+
+  const syncFromLocation = () => {
+    const id = location.hash.slice(1);
+    const panel = panelFor(id);
+    if ((panel && !panel.hidden) || (!panel && !document.documentElement.classList.contains('hub-mode'))) return;
+    setState(panel ? id : '', false);
+  };
+  window.addEventListener('popstate', syncFromLocation);
+  window.addEventListener('hashchange', syncFromLocation);
+
+  // 初始状态：带板块深链时直接进入对应板块。
+  const initial = panelFor(location.hash.slice(1));
+  panels.forEach(panel => { panel.hidden = panel !== initial; });
+  document.documentElement.classList.toggle('hub-mode', Boolean(initial));
+  if (shell) shell.hidden = Boolean(initial);
+  if (bar) bar.hidden = !initial;
+  if (initial && label) label.textContent = initial.dataset.hubLabel || '';
+</script>

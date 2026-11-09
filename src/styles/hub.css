@@ -1,0 +1,76 @@
+/* 入口控制台 + 板块页布局（JS 增强前的降级样式在 noscript 中处理） */
+.hub-shell[hidden], .hub-panel[hidden] { display: none; }
+
+.hub {
+  position: relative; display: flex; align-items: center; min-height: 100svh; overflow: clip; padding: 46px 0; isolation: isolate;
+}
+.hub::before {
+  position: absolute; z-index: -2; inset: 0; content: '';
+  background: radial-gradient(ellipse at 76% 42%, rgba(11,117,155,.2), transparent 38%), radial-gradient(ellipse at 22% 78%, rgba(14,71,114,.12), transparent 42%), linear-gradient(180deg,#080d15 0%,#070b12 92%);
+}
+.hub .hero-grid { position: absolute; z-index: -1; inset: 0; opacity: .42; pointer-events: none; background-image: linear-gradient(rgba(66,168,197,.085) 1px, transparent 1px), linear-gradient(90deg, rgba(66,168,197,.085) 1px, transparent 1px); background-size: 56px 56px; mask-image: linear-gradient(180deg, transparent 2%, #000 22%, #000 78%, transparent 98%); transform: perspective(600px) rotateX(7deg) scale(1.12); transform-origin: center 72%; }
+.hub .hero-glow { position: absolute; z-index: -1; top: 18%; right: 6%; width: 300px; height: 300px; border-radius: 50%; background: rgba(16,178,218,.1); filter: blur(100px); animation: breathe 7s ease-in-out infinite alternate; }
+
+.hub-inner { display: grid; grid-template-areas: "brand brand" "copy art"; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: 30px 64px; align-items: center; }
+
+.hub-brand { grid-area: brand; display: flex; align-items: center; gap: 11px; color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: -.04em; }
+.hub-brand .brand-mark { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid rgba(86,217,245,.38); border-radius: 9px; color: var(--cyan); font: 500 13px var(--mono); box-shadow: inset 0 0 16px rgba(86,217,245,.08); }
+.hub-brand-tag { margin-left: auto; color: var(--subtle); font: 9.5px var(--mono); letter-spacing: .16em; }
+
+.hub-copy { grid-area: copy; max-width: 640px; }
+.hub h1 { margin: 22px 0 16px; font-size: clamp(48px, 7.4vw, 96px); line-height: .98; letter-spacing: -.075em; font-weight: 800; }
+.hub h1 span { color: var(--cyan); }
+.hub-tagline { margin: 0; color: #a7b7c7; font-size: clamp(16px, 1.9vw, 20px); line-height: 1.8; }
+.hub-tagline strong { color: #e6f0f7; font-weight: 600; }
+
+.hub-nav { display: grid; margin-top: 34px; }
+.hub-entry {
+  display: grid; grid-template-columns: 46px minmax(0,1fr) 26px; align-items: center; gap: 14px;
+  min-height: 64px; padding: 12px 8px; border-top: 1px solid var(--line);
+  transition: background .18s ease;
+}
+.hub-entry:last-of-type { border-bottom: 1px solid var(--line); }
+.hub-entry-num { color: var(--cyan); font: 11px var(--mono); }
+.hub-entry-body { display: grid; gap: 4px; }
+.hub-entry-body strong { color: #e2edf4; font-size: 17px; font-weight: 700; letter-spacing: -.03em; transition: color .18s; }
+.hub-entry-body small { color: var(--subtle); font: 10px var(--mono); letter-spacing: .06em; }
+.hub-entry-arrow { color: #6f8295; font: 15px var(--mono); transition: transform .18s, color .18s; }
+.hub-entry:hover { background: rgba(86,217,245,.04); }
+.hub-entry:hover .hub-entry-body strong, .hub-entry:hover .hub-entry-arrow { color: var(--cyan); }
+.hub-entry:hover .hub-entry-arrow { transform: translate(3px,-3px); }
+.hub-entry:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.hub-hint { margin: 16px 2px 0; color: var(--subtle); font: 10px var(--mono); letter-spacing: .08em; }
+
+.hub-art { grid-area: art; justify-self: end; }
+
+/* 板块顶栏 */
+.panel-bar { position: fixed; z-index: 20; inset: 0 0 auto; background: rgba(7,11,18,.96); border-bottom: 1px solid var(--line); }
+.panel-bar-inner { display: flex; align-items: center; gap: 18px; height: 56px; }
+.panel-back { min-height: 44px; padding: 0 12px; border: 0; border-radius: 5px; background: transparent; color: #b9cad8; font-size: 12.5px; cursor: pointer; transition: color .18s, background .18s; }
+.panel-back:hover { color: var(--cyan); background: rgba(86,217,245,.06); }
+.panel-back:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.panel-label { margin-right: auto; color: var(--cyan); font: 11px var(--mono); letter-spacing: .14em; }
+.panel-gh { color: var(--muted); font-size: 12px; }
+.panel-gh:hover { color: var(--cyan); }
+
+/* 板块内容 */
+html.hub-mode .hub-panel { padding-top: 92px; }
+html.hub-mode .site-footer { border-top: 0; }
+/* 入口状态下页面就是一屏，不出现页脚造成的多余滚动 */
+html:not(.hub-mode) .site-footer { display: none; }
+
+/* 移动端：单列入口 */
+@media (max-width: 1000px) {
+  .hub { padding: 30px 0 40px; }
+  .hub-inner { grid-template-areas: "brand" "copy" "art"; grid-template-columns: minmax(0,1fr); gap: 24px; }
+  .hub h1 { margin: 16px 0 12px; }
+  .hub-nav { margin-top: 24px; }
+  .hub-entry { min-height: 58px; padding: 10px 4px; }
+  .hub-entry-body strong { font-size: 15px; }
+  .hub-art { justify-self: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub .hero-grid::after, .hub .hero-glow { animation: none !important; }
+  .hub .hero-grid::after { opacity: 0; }
+}

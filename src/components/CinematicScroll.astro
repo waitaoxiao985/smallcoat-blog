@@ -3,24 +3,17 @@ import '../styles/cinematic.css';
 ---
 <script>
   const root = document.documentElement;
-  const heroSequence = document.querySelector<HTMLElement>('.hero-sequence')!;
-  const heroContent = document.querySelector<HTMLElement>('.hero-content')!;
-  const grid = document.querySelector<HTMLElement>('.hero-grid')!;
-  const projects = document.querySelector<HTMLElement>('#projects')!;
-  const panels = [...projects.querySelectorAll<HTMLElement>('.project')];
-  const buttons = [...projects.querySelectorAll<HTMLButtonElement>('[data-project-index]')];
-  const counter = projects.querySelector<HTMLElement>('.project-position')!;
+  const projects = document.querySelector<HTMLElement>('#projects');
+  const panels = projects ? [...projects.querySelectorAll<HTMLElement>('.project')] : [];
+  const buttons = projects ? [...projects.querySelectorAll<HTMLButtonElement>('[data-project-index]')] : [];
+  const counter = projects?.querySelector<HTMLElement>('.project-position');
   const media = matchMedia('(min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)');
   const clamp = (value: number) => Math.max(0, Math.min(1, value));
   let frame = 0;
 
   function render() {
     frame = 0;
-    if (!media.matches) return;
-    const heroProgress = clamp(-heroSequence.getBoundingClientRect().top / Math.max(1, heroSequence.offsetHeight - innerHeight));
-    heroContent.style.transform = `translate3d(0,${-heroProgress * 150}px,0) scale(${1 - heroProgress * .28})`;
-    heroContent.style.opacity = String(1 - heroProgress * .85);
-    grid.style.transform = `perspective(600px) rotateX(${7 + heroProgress * 35}deg) scale(${1.12 + heroProgress * .8})`;
+    if (!media.matches || !projects) return;
     const progress = clamp(-projects.getBoundingClientRect().top / Math.max(1, projects.offsetHeight - innerHeight));
     const position = progress * (panels.length - 1);
     const active = Math.round(position);
@@ -34,7 +27,7 @@ import '../styles/cinematic.css';
       panel.style.visibility = Math.abs(distance) > 1 ? 'hidden' : 'visible';
     });
     buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(index === active)));
-    counter.textContent = `${String(active + 1).padStart(2, '0')} / 03`;
+    if (counter) counter.textContent = `${String(active + 1).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}`;
     projects.style.setProperty('--scene-progress', String(progress));
   }
 
@@ -45,14 +38,11 @@ import '../styles/cinematic.css';
   function configure() {
     cancelAnimationFrame(frame);
     frame = 0;
-    if (media.matches) {
+    if (media.matches && projects) {
       root.dataset.cinematic = 'true';
       render();
     } else {
       root.removeAttribute('data-cinematic');
-      heroContent.style.removeProperty('transform');
-      heroContent.style.removeProperty('opacity');
-      grid.style.removeProperty('transform');
       panels.forEach(panel => {
         panel.inert = false;
         panel.removeAttribute('data-active');
@@ -61,13 +51,15 @@ import '../styles/cinematic.css';
     }
   }
   buttons.forEach((button, index) => button.addEventListener('click', () => {
+    if (!projects) return;
     const top = projects.getBoundingClientRect().top + scrollY;
-    window.scrollTo({ top: top + (projects.offsetHeight - innerHeight) * index / (panels.length - 1), behavior: 'instant' });
+    window.scrollTo({ top: top + (projects.offsetHeight - innerHeight) * index / Math.max(1, panels.length - 1), behavior: 'instant' });
     schedule();
   }));
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
   window.addEventListener('pageshow', schedule);
+  window.addEventListener('hub:panelchange', () => { configure(); schedule(); });
   media.addEventListener('change', configure);
   configure();
 </script>

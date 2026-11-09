@@ -1,29 +1,27 @@
 import { test, expect } from '@playwright/test';
 
-test('homepage blocks animate on entry once, with short staggered project delays', async ({ page }) => {
+test('project cards reveal once with short staggered delays', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
+  await page.locator('[data-hub-link="projects"]').click();
   const project = page.locator('.project').first();
-  await expect(project).toHaveAttribute('data-reveal-state', 'pending');
-  await page.evaluate(() => document.querySelector('#projects')!.scrollIntoView({ behavior: 'instant' }));
   await expect(project).toHaveAttribute('data-reveal-state', 'revealed');
   await expect.poll(() => project.evaluate(el => el.getAnimations().length)).toBe(0);
   await expect(project).toHaveCSS('opacity', '1');
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await page.evaluate(() => document.querySelector('#projects')!.scrollIntoView({ behavior: 'instant' }));
+  expect(await page.locator('.project').evaluateAll(els => els.map(el => el.getAttribute('data-reveal-delay')))).toEqual(['0', '70', '140']);
+  await page.locator('.panel-back').click();
+  await page.locator('[data-hub-link="projects"]').click();
   expect(await project.evaluate(el => el.getAnimations().length)).toBe(0);
-  const delays = await page.locator('.project').evaluateAll(els => els.map(el => el.getAttribute('data-reveal-delay')));
-  expect(delays).toEqual(['0', '70', '140']);
-  await page.screenshot({ path: 'test-results/scroll-reveal.png' });
+  await page.screenshot({ path: 'test-results/projects-reveal.png' });
 });
 
-test('reducing motion during a visit reveals all content without further animations', async ({ page }) => {
+test('reducing motion during a visit reveals pending lists without animations', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
+  await page.locator('[data-hub-link="articles"]').click();
   await expect(page.locator('.article-list').last()).toHaveAttribute('data-reveal-state', 'pending');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('[data-reveal-state="pending"]')).toHaveCount(0);
-  await page.locator('.article-list').last().scrollIntoViewIfNeeded();
   expect(await page.locator('.article-list').last().evaluate(el => el.getAnimations().length)).toBe(0);
   await expect(page.locator('.article-list').last()).toHaveCSS('opacity', '1');
 });

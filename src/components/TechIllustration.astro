@@ -1,0 +1,91 @@
+---
+import '../styles/tech-illustration.css';
+---
+<div class="tech-illustration" aria-hidden="true">
+  <div class="ti-parallax">
+    <div class="ti-frame">
+      <span class="ti-corner tl"></span><span class="ti-corner tr"></span><span class="ti-corner bl"></span><span class="ti-corner br"></span>
+      <div class="ti-scan"></div>
+
+      <div class="ti-top">
+        <span class="ti-id">SC / SECURITY CONSOLE</span>
+        <span class="ti-status"><i></i>ONLINE</span>
+      </div>
+
+      <div class="ti-body">
+        <svg class="ti-net" viewBox="0 0 360 240" fill="none">
+          <g stroke="rgba(86,217,245,.3)" stroke-width="1">
+            <path d="M46 62 128 36 214 78 300 44"/>
+            <path d="M46 62 86 148 172 118 214 78"/>
+            <path d="M86 148 158 208 262 168 172 118"/>
+            <path d="M172 118 300 44 332 126 262 168"/>
+            <path d="M46 62 172 118 332 126"/>
+          </g>
+          <g stroke="#8cecff" stroke-width="1.6" stroke-linecap="round">
+            <path class="ti-pulse" pathLength="1" d="M46 62 128 36 214 78 300 44"/>
+            <path class="ti-pulse" pathLength="1" d="M86 148 172 118 332 126"/>
+            <path class="ti-pulse" pathLength="1" d="M158 208 262 168 172 118"/>
+          </g>
+          <g fill="#9ff1ff">
+            <circle class="ti-node" cx="46" cy="62" r="3.4"/>
+            <circle class="ti-node" cx="128" cy="36" r="2.4"/>
+            <circle class="ti-node" cx="214" cy="78" r="3"/>
+            <circle class="ti-node" cx="300" cy="44" r="2.2"/>
+            <circle class="ti-node" cx="86" cy="148" r="2.8"/>
+            <circle class="ti-node" cx="172" cy="118" r="4.2"/>
+            <circle class="ti-node" cx="332" cy="126" r="2.4"/>
+            <circle class="ti-node" cx="158" cy="208" r="2.2"/>
+            <circle class="ti-node" cx="262" cy="168" r="3"/>
+          </g>
+          <circle class="ti-orbit" cx="172" cy="118" r="26" stroke="rgba(86,217,245,.28)" stroke-dasharray="2 7"/>
+        </svg>
+
+        <div class="ti-radar">
+          <span class="ti-ring r1"></span><span class="ti-ring r2"></span><span class="ti-ring r3"></span>
+          <span class="ti-cross"></span>
+          <span class="ti-radar-sweep"></span>
+          <i class="ti-blip b1"></i><i class="ti-blip b2"></i><i class="ti-blip b3"></i>
+        </div>
+      </div>
+
+      <div class="ti-code">
+        <div class="ti-code-bar"><span>session / 0x7a</span><span>zsh</span></div>
+        <div class="ti-code-lines">
+          <p><b>$</b> nmap -sV 10.10.10.0/24</p>
+          <p class="ti-dim">22/tcp open ssh · 80/tcp open http</p>
+          <p><b>$</b> python3 recon.py --scope local<span class="ti-code-caret"></span></p>
+        </div>
+      </div>
+
+      <div class="ti-foot"><span>NETWORK MAP</span><span>CTF / NOTES</span><span>PYTHON / SECURITY</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const hub = document.querySelector<HTMLElement>('.hub');
+  const art = document.querySelector<HTMLElement>('.tech-illustration');
+  const parallax = art?.querySelector<HTMLElement>('.ti-parallax');
+  const canMove = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+
+  if (hub && parallax) {
+    let frame = 0;
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      parallax.style.transform = 'translate3d(0,0,0)';
+    };
+    hub.addEventListener('pointermove', event => {
+      if (!canMove.matches || event.pointerType !== 'mouse' || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const bounds = hub.getBoundingClientRect();
+        const dx = (event.clientX - bounds.left) / bounds.width - .5;
+        const dy = (event.clientY - bounds.top) / bounds.height - .5;
+        parallax.style.transform = `translate3d(${(dx * 12).toFixed(2)}px,${(dy * 9).toFixed(2)}px,0)`;
+      });
+    }, { passive: true });
+    hub.addEventListener('pointerleave', reset);
+    canMove.addEventListener('change', reset);
+  }
+</script>
