@@ -1,0 +1,24 @@
+---
+import '../styles/network-visual.css';
+---
+<div class="network-visual" aria-hidden="true">
+  <svg viewBox="0 0 560 460" role="img" aria-hidden="true" aria-label="abstract network animation">
+    <defs>
+      <radialGradient id="node-core"><stop offset="0" stop-color="#b5f6ff"/><stop offset=".35" stop-color="#56d9f5"/><stop offset="1" stop-color="#15b8dc" stop-opacity="0"/></radialGradient>
+      <linearGradient id="wire" x1="0" x2="1"><stop stop-color="#56d9f5" stop-opacity=".05"/><stop offset=".5" stop-color="#56d9f5" stop-opacity=".65"/><stop offset="1" stop-color="#56d9f5" stop-opacity=".08"/></linearGradient>
+      <filter id="node-glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <g class="network-wires" fill="none" stroke="url(#wire)" stroke-width="1">
+      <path d="M80 102 220 62 380 120 485 75"/><path d="M80 102 145 270 305 220 380 120"/><path d="M145 270 250 390 420 330 305 220"/><path d="M305 220 485 75 520 255 420 330"/><path d="M80 102 305 220 520 255"/>
+    </g>
+    <g class="network-pulses" fill="none" stroke="#b5f6ff" stroke-width="2" stroke-linecap="round">
+      <path class="network-pulse" pathLength="1" d="M80 102 220 62 380 120 485 75"/><path class="network-pulse" pathLength="1" d="M145 270 305 220 520 255"/><path class="network-pulse" pathLength="1" d="M250 390 420 330 305 220"/>
+    </g>
+    <g class="network-nodes" filter="url(#node-glow)" fill="url(#node-core)">
+      <circle class="network-node" cx="80" cy="102" r="12"/><circle class="network-node" cx="220" cy="62" r="8"/><circle class="network-node" cx="380" cy="120" r="11"/><circle class="network-node" cx="485" cy="75" r="7"/><circle class="network-node" cx="145" cy="270" r="10"/><circle class="network-node" cx="305" cy="220" r="14"/><circle class="network-node" cx="520" cy="255" r="8"/><circle class="network-node" cx="250" cy="390" r="7"/><circle class="network-node" cx="420" cy="330" r="10"/>
+    </g>
+    <circle class="network-orbit" cx="305" cy="220" r="54" fill="none" stroke="#56d9f5" stroke-opacity=".2" stroke-dasharray="2 9"/>
+  </svg>
+  <span class="network-label network-label-a">LIVE / NODE MAP</span>
+  <span class="network-label network-label-b">PACKET FLOW 0x7A</span>
+</div>
