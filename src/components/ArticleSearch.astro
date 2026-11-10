@@ -1,0 +1,117 @@
+---
+---
+<section class="search-console" data-article-search aria-label="文章搜索">
+  <header class="sc-bar">
+    <span class="sc-title">SC / SEARCH CONSOLE</span>
+    <span class="sc-hint">ENTER 执行 · ESC 清空</span>
+  </header>
+  <form class="sc-form" data-sc-form role="search">
+    <span class="sc-prompt" aria-hidden="true">$ grep -i</span>
+    <input class="sc-input" type="search" data-sc-input placeholder="输入标题或关键词…" aria-label="搜索学习记录" autocomplete="off" />
+    <button class="sc-run" type="submit">ENTER ↵</button>
+  </form>
+  <div class="sc-results" data-sc-results aria-live="polite">
+    <p class="sc-idle" data-sc-idle>&gt; 待命 · 输入关键词后按 Enter 检索全部学习记录</p>
+  </div>
+</section>
+
+<style>
+  .search-console { margin-top: 34px; border: 1px solid var(--line); border-radius: 8px; background: rgba(21, 13, 38, .55); overflow: hidden; }
+  .sc-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+  .sc-title { color: var(--muted); font: 500 10.5px var(--mono); letter-spacing: .14em; }
+  .sc-hint { color: var(--subtle); font: 10px var(--mono); letter-spacing: .1em; }
+  .sc-form { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; }
+  .sc-prompt { color: var(--cyan); font: 12.5px var(--mono); white-space: nowrap; }
+  .sc-input { flex: 1; min-width: 0; min-height: 40px; padding: 0 10px; border: 1px solid rgba(139,92,246,.35); border-radius: 5px; background: rgba(21,13,38,.6); color: var(--text); font: 13px var(--sans); outline: none; transition: border-color .18s, box-shadow .18s; }
+  .sc-input:focus { border-color: rgba(139,92,246,.75); box-shadow: 0 0 0 2px rgba(124,58,237,.16); }
+  .sc-input::placeholder { color: var(--subtle); }
+  .sc-run { min-height: 40px; padding: 0 14px; border: 1px solid rgba(139,92,246,.6); border-radius: 5px; background: rgba(124,58,237,.12); color: #c4b0ff; font: 500 11px var(--mono); letter-spacing: .08em; cursor: pointer; transition: color .18s, border-color .18s, background .18s; }
+  .sc-run:hover { color: #ddd0ff; border-color: rgba(139,92,246,.85); background: rgba(124,58,237,.2); }
+  .sc-run:focus-visible, .sc-input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .sc-results { padding: 10px 16px 14px; }
+  .sc-idle, .sc-none, .sc-meta { margin: 4px 0; color: var(--subtle); font: 11.5px var(--mono); }
+  .sc-none { color: #b9a8ff; }
+  .sc-meta { margin: 8px 0 2px; color: var(--muted); letter-spacing: .06em; }
+  .sc-hit { display: grid; grid-template-columns: 62px minmax(0, 1fr) 18px; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid rgba(148,182,210,.08); transition: background .18s ease; }
+  .sc-hit:hover { background: rgba(86,217,245,.035); }
+  .sc-hit-day { color: var(--cyan); font: 10px var(--mono); white-space: nowrap; }
+  .sc-hit-title { overflow: hidden; color: #dce7ef; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; transition: color .18s; }
+  .sc-hit:hover .sc-hit-title { color: var(--cyan); }
+  .sc-hit-arrow { color: #6f8295; font: 13px var(--mono); transition: transform .18s, color .18s; }
+  .sc-hit:hover .sc-hit-arrow { color: var(--cyan); transform: translate(3px, -3px); }
+  @media (max-width: 700px) {
+    .sc-form { flex-wrap: wrap; }
+    .sc-input { flex: 1 1 100%; order: 3; }
+    .sc-hint { display: none; }
+    .sc-hit { grid-template-columns: 52px minmax(0, 1fr) 15px; gap: 9px; }
+    .sc-hit-title { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-article-search]');
+  const panel = document.getElementById('articles');
+
+  if (root && panel) {
+    const form = root.querySelector<HTMLFormElement>('[data-sc-form]');
+    const input = root.querySelector<HTMLInputElement>('[data-sc-input]');
+    const results = root.querySelector<HTMLElement>('[data-sc-results]');
+
+    // 索引直接取自周目录里的文章行，保持单一数据来源。
+    const index = [...panel.querySelectorAll<HTMLAnchorElement>('.article-row')].map(row => ({
+      href: row.getAttribute('href') || '#',
+      day: row.querySelector('.article-day')?.textContent?.trim() ?? '',
+      title: row.querySelector('.article-main strong')?.textContent?.trim() ?? '',
+      haystack: (row.dataset.search || '').toLowerCase(),
+    }));
+
+    const reset = () => {
+      results.replaceChildren();
+      const idle = document.createElement('p');
+      idle.className = 'sc-idle';
+      idle.textContent = '> 待命 · 输入关键词后按 Enter 检索全部学习记录';
+      results.appendChild(idle);
+    };
+
+    const run = (rawQuery: string) => {
+      const query = rawQuery.trim().toLowerCase();
+      results.replaceChildren();
+      if (!query) { reset(); return; }
+
+      const hits = index.filter(item => item.haystack.includes(query));
+      const meta = document.createElement('p');
+      meta.className = 'sc-meta';
+      meta.textContent = hits.length ? `匹配 ${hits.length} 篇 · "${query}"` : `> 0 RESULTS · 没有匹配"${query}"的学习记录，换个关键词试试`;
+      meta.classList.add(hits.length ? 'sc-meta' : 'sc-none');
+      results.appendChild(meta);
+
+      for (const hit of hits) {
+        const link = document.createElement('a');
+        link.className = 'sc-hit';
+        link.href = hit.href;
+        const day = document.createElement('span');
+        day.className = 'sc-hit-day';
+        day.textContent = hit.day;
+        const title = document.createElement('strong');
+        title.className = 'sc-hit-title';
+        title.textContent = hit.title;
+        const arrow = document.createElement('span');
+        arrow.className = 'sc-hit-arrow';
+        arrow.textContent = '↗';
+        link.append(day, title, arrow);
+        results.appendChild(link);
+      }
+    };
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      run(input?.value ?? '');
+    });
+    input?.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        input.value = '';
+        reset();
+      }
+    });
+  }
+</script>
