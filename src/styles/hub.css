@@ -102,6 +102,10 @@ html:not(.hub-mode) .site-footer { display: none; }
 /* overflow:clip 裁掉越界的光晕层，避免鼠标移到边缘时撑出滚动条；
    用 clip 而非 hidden，不影响 week-heading 的 sticky 定位 */
 .hub-panel { position: relative; isolation: isolate; overflow: clip; }
+/* 页脚贴底：板块内容不满一屏时，footer 仍固定在视口最底部 */
+html.hub-mode body { display: flex; flex-direction: column; min-height: 100svh; }
+html.hub-mode .hub-panels { flex: 1 0 auto; }
+html.hub-mode .site-footer { margin-top: auto; }
 #articles .section-heading { margin-top: 26px; }
 #articles .container {
   position: relative;
