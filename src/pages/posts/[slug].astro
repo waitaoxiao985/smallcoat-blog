@@ -57,7 +57,8 @@ const weekLabels = ['破冰与实验环境', '信息搜集与侦察', '注入风
     .article-body :global(table) { display: block; width: 100%; margin: 1.6em 0; overflow-x: auto; border-collapse: collapse; font-size: 14px; }
     .article-body :global(th), .article-body :global(td) { min-width: 100px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; }
     .article-body :global(th) { background: var(--panel-soft); color: var(--text); }
-    .article-body :global(pre) { overflow-x: auto; margin: 1.5em 0; padding: 18px 20px; border: 1px solid var(--line); border-radius: 7px; background: #191030; font: 13px/1.75 var(--mono); }
+    .article-body :global(pre) { position: relative; overflow-x: auto; margin: 1.5em 0; padding: 18px 20px; border: 1px solid var(--line); border-radius: 7px; font: 13px/1.75 var(--mono); }
+    .article-body :global(pre.astro-code) { background-color: #1a1b26 !important; }
     .article-body :global(code) { font-family: var(--mono); font-size: .9em; }
     .article-body :global(:not(pre) > code) { padding: 2px 5px; border-radius: 3px; background: rgba(148,182,210,.1); color: #a9eafa; }
     .article-body :global(img) { display: block; max-width: 100%; height: auto; margin: 1.5em auto; border: 1px solid var(--line); border-radius: 7px; }
@@ -69,4 +70,37 @@ const weekLabels = ['破冰与实验环境', '信息搜集与侦察', '注入风
     .post-nav-card.next { text-align: right; }
     @media (max-width: 600px) { .post-page { padding-top: 90px; } .back-link { margin-bottom: 32px; } .article-body { font-size: 15px; } .post-navigation { grid-template-columns: 1fr; } }
   </style>
+  <style is:global>
+    /* 复制按钮由脚本动态创建，样式必须全局作用域才能命中。 */
+    .copy-btn { position: absolute; top: 10px; right: 10px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 4px; background: rgba(21,13,38,.85); color: var(--subtle); font: 10px var(--mono); letter-spacing: .06em; cursor: pointer; opacity: 0; transition: opacity .18s, color .18s, border-color .18s; }
+    .article-body pre:hover .copy-btn, .copy-btn:focus-visible { opacity: 1; }
+    .copy-btn:hover { color: var(--cyan); border-color: rgba(86,217,245,.45); }
+    .copy-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; opacity: 1; }
+    .copy-btn.copied { color: #7ee2a8; border-color: rgba(126,226,168,.45); }
+  </style>
+  <script>
+    // 代码块复制按钮：hover / 键盘聚焦时出现，点击复制并以文字反馈。
+    const blocks = document.querySelectorAll('.article-body pre');
+    blocks.forEach((pre) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copy-btn';
+      button.setAttribute('aria-label', '复制代码');
+      button.textContent = '复制';
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pre.querySelector('code')?.innerText ?? pre.innerText);
+          button.textContent = '已复制 ✓';
+          button.classList.add('copied');
+        } catch {
+          button.textContent = '复制失败';
+        }
+        window.setTimeout(() => {
+          button.textContent = '复制';
+          button.classList.remove('copied');
+        }, 1600);
+      });
+      pre.appendChild(button);
+    });
+  </script>
 </BaseLayout>
