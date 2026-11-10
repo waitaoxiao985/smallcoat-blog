@@ -5,24 +5,27 @@
   position: relative; display: flex; align-items: center; min-height: 100svh; overflow: clip; padding: 46px 0; isolation: isolate;
 }
 
-/* 桌面双栏布局下入口页钉死一屏：任何缩放形式都不产生页面滚动条（内部压缩 + 裁剪兜底）。 */
+/* 桌面双栏布局下入口页钉死一屏：关键尺寸全部随视口高度流式收缩（svh），
+   任何缩放组合都平滑收进一屏，不出滚动条也不裁内容；overflow:clip 仅作兜底。
+   选择器用 .hub-shell .hub 前缀提权重（特异性高于基础规则）：
+   打包器会重排 media 块位置，不能依赖源码顺序压过基础规则。 */
 @media (min-width: 1000px) {
   .hub-shell { height: 100svh; overflow: clip; }
+  .hub-shell .hub { padding: clamp(14px, 3svh, 46px) 0; }
+  .hub-shell .hub-inner { gap: clamp(14px, 3svh, 30px) 64px; }
+  .hub-shell .hub h1 { font-size: clamp(34px, min(7.4vw, 11svh), 96px); margin: clamp(12px, 2.6svh, 22px) 0 clamp(10px, 2svh, 16px); }
+  .hub-shell .hub-tagline { font-size: clamp(14px, 2.4svh, 20px); }
+  .hub-shell .hub-nav { margin-top: clamp(16px, 4svh, 34px); }
+  .hub-shell .hub-entry { min-height: min(64px, 9.5svh); padding: min(12px, 2svh) 8px; }
+  .hub-shell .hub-entry-body strong { font-size: clamp(14px, 2.6svh, 17px); }
+  .hub-shell .hub-hint { margin-top: clamp(10px, 2svh, 16px); }
+  .hub-shell .tech-illustration { width: min(100%, 540px, 60svh); }
 }
-@media (min-width: 1000px) and (max-height: 860px) {
-  .hub { padding: 26px 0; }
-  .hub-inner { gap: 22px 48px; }
-  .hub h1 { font-size: clamp(40px, 6.2vw, 72px); margin: 14px 0 10px; }
-  .hub-entry { min-height: 56px; padding: 10px 8px; }
-  .hub-nav { margin-top: 24px; }
-  .tech-illustration { width: min(100%, 460px); }
-}
-@media (min-width: 1000px) and (max-height: 700px) {
-  .hub { padding: 18px 0; }
-  .hub h1 { font-size: clamp(34px, 5vw, 56px); margin: 10px 0 8px; }
-  .hub-entry { min-height: 50px; }
-  .hub-tagline { line-height: 1.6; }
-  .tech-illustration { width: min(100%, 420px); }
+/* 极矮视口（~1366x768 屏 + 150% 系统缩放）兜底：隐藏提示行，条目与标语再收一档 */
+@media (min-width: 1000px) and (max-height: 440px) {
+  .hub-shell .hub-hint { display: none; }
+  .hub-shell .hub-entry { min-height: min(48px, 10svh); padding: min(8px, 1.5svh) 8px; }
+  .hub-shell .hub-tagline { font-size: clamp(13px, 2.6svh, 16px); }
 }
 .hub::before {
   position: absolute; z-index: -2; inset: 0; content: '';
