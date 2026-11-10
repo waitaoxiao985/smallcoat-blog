@@ -16,8 +16,8 @@ import '../styles/widgets.css';
 
 const projects = [
   { name: 'SecGuard', description: '轻量级主机安全监控平台，探索 SIEM / XDR 的实践。', tech: 'JAVA · SECURITY', href: 'https://github.com/waitaoxiao985/SecGuard', number: '01' },
-  { name: 'Cyber_Platform', description: '自建 CTF 题库网站，记录平台构建与安全学习。', tech: 'TYPESCRIPT · CTF', href: 'https://github.com/waitaoxiao985/Cyber_Platform', number: '02' },
-  { name: 'CyberSpace_Notes', description: '持续整理网络空间安全方向的学习笔记。', tech: 'NOTES · SECURITY', href: 'https://github.com/waitaoxiao985/CyberSpace_Notes', number: '03' },
+  { name: 'dengbao-assessment-practice', description: '等保 2.0 测评练习，整理等级保护测评的流程与实践要点。', tech: 'PYTHON · SECURITY', href: 'https://github.com/waitaoxiao985/dengbao-assessment-practice', number: '02' },
+  { name: 'AI_APP', description: '关于 AI 的知识百科 App，把 AI 学习装进手机里。', tech: 'JAVASCRIPT · AI', href: 'https://github.com/waitaoxiao985/AI_APP', number: '03' },
 ];
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => a.id.localeCompare(b.id));
 const weeks = [1, 2, 3, 4].map((week) => ({
