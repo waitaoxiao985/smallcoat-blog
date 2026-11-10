@@ -29,22 +29,23 @@
   .sc-run:hover { color: #ddd0ff; border-color: rgba(139,92,246,.85); background: rgba(124,58,237,.2); }
   .sc-run:focus-visible, .sc-input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
   .sc-results { padding: 10px 16px 14px; }
-  .sc-idle, .sc-none, .sc-meta { margin: 4px 0; color: var(--subtle); font: 11.5px var(--mono); }
-  .sc-none { color: #b9a8ff; }
-  .sc-meta { margin: 8px 0 2px; color: var(--muted); letter-spacing: .06em; }
-  .sc-hit { display: grid; grid-template-columns: 62px minmax(0, 1fr) 18px; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid rgba(148,182,210,.08); transition: background .18s ease; }
-  .sc-hit:hover { background: rgba(86,217,245,.035); }
-  .sc-hit-day { color: var(--cyan); font: 10px var(--mono); white-space: nowrap; }
-  .sc-hit-title { overflow: hidden; color: #dce7ef; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; transition: color .18s; }
-  .sc-hit:hover .sc-hit-title { color: var(--cyan); }
-  .sc-hit-arrow { color: #6f8295; font: 13px var(--mono); transition: transform .18s, color .18s; }
-  .sc-hit:hover .sc-hit-arrow { color: var(--cyan); transform: translate(3px, -3px); }
+  /* 结果条目由脚本动态创建，没有 scoped 属性，需用 :global 命中 */
+  .sc-results :global(.sc-idle), .sc-results :global(.sc-none), .sc-results :global(.sc-meta) { margin: 4px 0; color: var(--subtle); font: 11.5px var(--mono); }
+  .sc-results :global(.sc-none) { color: #b9a8ff; }
+  .sc-results :global(.sc-meta) { margin: 8px 0 2px; color: var(--muted); letter-spacing: .06em; }
+  .sc-results :global(.sc-hit) { display: grid; grid-template-columns: 62px minmax(0, 1fr) 18px; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid rgba(148,182,210,.08); transition: background .18s ease; }
+  .sc-results :global(.sc-hit:hover) { background: rgba(86,217,245,.035); }
+  .sc-results :global(.sc-hit-day) { color: var(--cyan); font: 10px var(--mono); white-space: nowrap; }
+  .sc-results :global(.sc-hit-title) { overflow: hidden; color: #dce7ef; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; transition: color .18s; }
+  .sc-results :global(.sc-hit:hover .sc-hit-title) { color: var(--cyan); }
+  .sc-results :global(.sc-hit-arrow) { color: #6f8295; font: 13px var(--mono); transition: transform .18s, color .18s; }
+  .sc-results :global(.sc-hit:hover .sc-hit-arrow) { color: var(--cyan); transform: translate(3px, -3px); }
   @media (max-width: 700px) {
     .sc-form { flex-wrap: wrap; }
     .sc-input { flex: 1 1 100%; order: 3; }
     .sc-hint { display: none; }
-    .sc-hit { grid-template-columns: 52px minmax(0, 1fr) 15px; gap: 9px; }
-    .sc-hit-title { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .sc-results :global(.sc-hit) { grid-template-columns: 52px minmax(0, 1fr) 15px; gap: 9px; }
+    .sc-results :global(.sc-hit-title) { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   }
 </style>
 
