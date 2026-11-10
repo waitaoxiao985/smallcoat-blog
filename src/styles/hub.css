@@ -99,7 +99,9 @@ html:not(.hub-mode) .site-footer { display: none; }
 }
 
 /* 学习记录板块外框：把标题/解密条/筛选器/周目录包进同一个面板矩形 */
-.hub-panel { position: relative; isolation: isolate; }
+/* overflow:clip 裁掉越界的光晕层，避免鼠标移到边缘时撑出滚动条；
+   用 clip 而非 hidden，不影响 week-heading 的 sticky 定位 */
+.hub-panel { position: relative; isolation: isolate; overflow: clip; }
 #articles .container {
   position: relative;
   padding: clamp(24px, 4vw, 40px) clamp(18px, 3.5vw, 38px) clamp(8px, 1.6vw, 14px);
