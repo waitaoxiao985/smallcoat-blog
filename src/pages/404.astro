@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 · 页面不存在 — SmalLCoat" description="你访问的页面不存在或已被移动。">
+  <main class="nf">
+    <div class="nf-grid" aria-hidden="true"></div>
+    <section class="nf-console" aria-labelledby="nf-title">
+      <header class="nf-bar">
+        <span class="nf-bar-label">SC / ERROR CONSOLE</span>
+        <span class="nf-bar-status"><i></i>SIGNAL LOST</span>
+      </header>
+
+      <div class="nf-body">
+        <p class="nf-kicker">ERROR_CODE // ROUTE_NOT_FOUND</p>
+        <h1 id="nf-title" class="nf-code" data-decode>404</h1>
+
+        <div class="nf-terminal">
+          <p><span class="nf-prompt">$</span> trace <span class="nf-path" id="nf-path">此页面</span></p>
+          <p class="nf-out">&gt; 404 NOT_FOUND · 页面不存在，或已被移动</p>
+          <p class="nf-out">&gt; 可能是链接打错了，也可能这篇笔记还没写完</p>
+        </div>
+
+        <div class="nf-actions">
+          <a class="nf-btn primary" href="/">← 返回入口</a>
+          <a class="nf-btn" href="/#articles">查看学习记录</a>
+          <a class="nf-btn ghost" href="https://github.com/waitaoxiao985" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+      </div>
+
+      <footer class="nf-foot">
+        <span>SmalLCoat · 个人技术博客</span>
+        <span class="nf-foot-dim">按 ESC 返回首页</span>
+      </footer>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: 24px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .nf-grid {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(11, 117, 155, .22), transparent 55%),
+      repeating-linear-gradient(0deg, transparent 0 47px, rgba(183, 168, 226, .07) 47px 48px),
+      repeating-linear-gradient(90deg, transparent 0 47px, rgba(183, 168, 226, .07) 47px 48px);
+  }
+  .nf-console {
+    width: min(640px, 100%);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .45), inset 0 0 60px rgba(86, 217, 245, .04);
+    overflow: hidden;
+  }
+  .nf-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    font: 500 11px var(--mono);
+    letter-spacing: .12em;
+  }
+  .nf-bar-label { color: var(--muted); }
+  .nf-bar-status { display: inline-flex; align-items: center; gap: 8px; color: var(--cyan); }
+  .nf-bar-status i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    animation: nf-blink 1.4s steps(2, start) infinite;
+  }
+  @keyframes nf-blink { to { visibility: hidden; } }
+
+  .nf-body { padding: 44px 40px 40px; }
+  .nf-kicker { margin: 0; color: var(--subtle); font: 11px var(--mono); letter-spacing: .18em; }
+  .nf-code {
+    margin: 10px 0 26px;
+    color: var(--cyan);
+    font: 500 clamp(88px, 20vw, 140px)/1 var(--mono);
+    letter-spacing: .04em;
+    text-shadow: 0 0 42px rgba(86, 217, 245, .35);
+  }
+  .nf-terminal {
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--cyan);
+    border-radius: 6px;
+    background: rgba(21, 13, 38, .6);
+    font: 13px/1.9 var(--mono);
+  }
+  .nf-terminal p { margin: 0; }
+  .nf-prompt { color: var(--cyan); }
+  .nf-path { color: var(--text); word-break: break-all; }
+  .nf-out { color: var(--muted); }
+
+  .nf-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .nf-btn {
+    padding: 11px 18px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    color: var(--text);
+    font: 500 13px var(--mono);
+    transition: border-color .2s ease, color .2s ease, box-shadow .2s ease;
+  }
+  .nf-btn:hover { border-color: rgba(86, 217, 245, .5); color: var(--cyan); box-shadow: inset 0 0 18px rgba(86, 217, 245, .08); }
+  .nf-btn.primary { border-color: rgba(86, 217, 245, .45); color: var(--cyan); }
+  .nf-btn.ghost { color: var(--muted); }
+
+  .nf-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 20px;
+    border-top: 1px solid var(--line);
+    color: var(--subtle);
+    font: 11px var(--mono);
+    letter-spacing: .08em;
+  }
+
+  @media (max-width: 560px) {
+    .nf-body { padding: 32px 22px 30px; }
+    .nf-actions .nf-btn { flex: 1 1 100%; text-align: center; }
+  }
+</style>
+
+<script>
+  const pathEl = document.getElementById('nf-path');
+  if (pathEl) pathEl.textContent = location.pathname;
+
+  const codeEl = document.querySelector<HTMLElement>('[data-decode]');
+  if (codeEl) {
+    const target = codeEl.textContent ?? '404';
+    const glyphs = '0123456789ABCDEF#/\\_';
+    let frame = 0;
+    const total = 18;
+    const timer = setInterval(() => {
+      frame += 1;
+      const reveal = Math.floor((frame / total) * target.length);
+      codeEl.textContent = target
+        .split('')
+        .map((ch, i) => (i < reveal ? ch : glyphs[Math.floor(Math.random() * glyphs.length)]))
+        .join('');
+      if (frame >= total) {
+        codeEl.textContent = target;
+        clearInterval(timer);
+      }
+    }, 55);
+  }
+
+  addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') location.href = '/';
+  });
+</script>
