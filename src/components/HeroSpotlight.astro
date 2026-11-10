@@ -3,49 +3,58 @@
 <div class="hero-spotlight" aria-hidden="true"></div>
 
 <script>
-  const hero = document.querySelector<HTMLElement>('.hub');
-  const light = hero?.querySelector<HTMLElement>('.hero-spotlight');
   const preference = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
 
-  if (hero && light) {
+  // 首页入口 + 各板块共用同一套鼠标光晕：每个 [data-spotlight] 容器各自挂一份实例
+  const roots = Array.from(document.querySelectorAll<HTMLElement>('[data-spotlight]'));
+
+  const hide = (root: HTMLElement) => {
+    root.removeAttribute('data-spotlight-active');
+  };
+
+  for (const root of roots) {
+    const light = root.querySelector<HTMLElement>('.hero-spotlight');
+    if (!light) continue;
+
     let frame = 0;
     let x = 0;
     let y = 0;
 
-    const hide = () => {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      hero.removeAttribute('data-spotlight-active');
-    };
-
     const paint = () => {
       light.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      hero.setAttribute('data-spotlight-active', 'true');
+      root.setAttribute('data-spotlight-active', 'true');
       frame = 0;
     };
 
-    const move = (event: PointerEvent) => {
+    root.addEventListener('pointermove', (event: PointerEvent) => {
       if (!preference.matches || event.pointerType !== 'mouse') return;
-      const bounds = hero.getBoundingClientRect();
+      const bounds = root.getBoundingClientRect();
       x = event.clientX - bounds.left;
       y = event.clientY - bounds.top;
-      // Coalesce high-frequency pointer events; no perpetual render loop.
+      // 合并高频 pointer 事件；不跑常驻渲染循环。
       if (!frame) frame = requestAnimationFrame(paint);
-    };
-
-    hero.addEventListener('pointermove', move, { passive: true });
-    hero.addEventListener('pointerleave', hide);
-    hero.addEventListener('pointercancel', hide);
-    preference.addEventListener('change', hide);
-    window.addEventListener('blur', hide);
-    document.addEventListener('visibilitychange', () => { if (document.hidden) hide(); });
+    }, { passive: true });
+    root.addEventListener('pointerleave', () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      hide(root);
+    });
+    root.addEventListener('pointercancel', () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      hide(root);
+    });
   }
+
+  preference.addEventListener('change', () => roots.forEach(hide));
+  window.addEventListener('blur', () => roots.forEach(hide));
+  document.addEventListener('visibilitychange', () => { if (document.hidden) roots.forEach(hide); });
 </script>
 
 <style>
   .hero-spotlight { display: none; position: absolute; top: -220px; left: -220px; z-index: -1; width: 440px; height: 440px; border-radius: 50%; pointer-events: none; opacity: 0; background: radial-gradient(circle, rgba(86,217,245,.12) 0%, rgba(21,184,220,.055) 33%, transparent 70%); transition: opacity .35s ease; }
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
     .hero-spotlight { display: block; }
-    :global(.hub[data-spotlight-active="true"]) .hero-spotlight { opacity: 1; }
+    :global([data-spotlight][data-spotlight-active="true"]) .hero-spotlight { opacity: 1; }
   }
 </style>
