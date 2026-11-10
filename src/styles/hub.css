@@ -99,6 +99,7 @@ html:not(.hub-mode) .site-footer { display: none; }
 }
 
 /* 学习记录板块外框：把标题/解密条/筛选器/周目录包进同一个面板矩形 */
+.hub-panel { position: relative; isolation: isolate; }
 #articles .container {
   position: relative;
   padding: clamp(24px, 4vw, 40px) clamp(18px, 3.5vw, 38px) clamp(8px, 1.6vw, 14px);
