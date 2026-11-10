@@ -4,6 +4,26 @@
 .hub {
   position: relative; display: flex; align-items: center; min-height: 100svh; overflow: clip; padding: 46px 0; isolation: isolate;
 }
+
+/* 桌面双栏布局下入口页钉死一屏：任何缩放形式都不产生页面滚动条（内部压缩 + 裁剪兜底）。 */
+@media (min-width: 1000px) {
+  .hub-shell { height: 100svh; overflow: clip; }
+}
+@media (min-width: 1000px) and (max-height: 860px) {
+  .hub { padding: 26px 0; }
+  .hub-inner { gap: 22px 48px; }
+  .hub h1 { font-size: clamp(40px, 6.2vw, 72px); margin: 14px 0 10px; }
+  .hub-entry { min-height: 56px; padding: 10px 8px; }
+  .hub-nav { margin-top: 24px; }
+  .tech-illustration { width: min(100%, 460px); }
+}
+@media (min-width: 1000px) and (max-height: 700px) {
+  .hub { padding: 18px 0; }
+  .hub h1 { font-size: clamp(34px, 5vw, 56px); margin: 10px 0 8px; }
+  .hub-entry { min-height: 50px; }
+  .hub-tagline { line-height: 1.6; }
+  .tech-illustration { width: min(100%, 420px); }
+}
 .hub::before {
   position: absolute; z-index: -2; inset: 0; content: '';
   background: radial-gradient(ellipse at 76% 42%, rgba(124,58,237,.22), transparent 38%), radial-gradient(ellipse at 22% 78%, rgba(88,28,180,.16), transparent 42%), linear-gradient(180deg,#190f33 0%,#150d26 92%);
