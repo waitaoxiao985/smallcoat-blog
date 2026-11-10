@@ -2,11 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSpotlight from '../components/HeroSpotlight.astro';
 import TechIllustration from '../components/TechIllustration.astro';
-import HubController from '../components/HubController.astro';
+import ArticlesFilter from '../components/ArticlesFilter.astro';
+import ArticleSearch from '../components/ArticleSearch.astro';
 import CinematicScroll from '../components/CinematicScroll.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
 import ArticlesAccordion from '../components/ArticlesAccordion.astro';
-import ArticlesFilter from '../components/ArticlesFilter.astro';
+import HubController from '../components/HubController.astro';
 import DecodeBar from '../components/DecodeBar.astro';
 import WhoamiTerminal from '../components/WhoamiTerminal.astro';
 import { getCollection } from 'astro:content';
@@ -116,6 +117,7 @@ const entries = [
             </div>
           </section>)}
         </div>
+        <ArticleSearch />
       </div>
     </section>
 
