@@ -35,7 +35,7 @@ const entries = [
   <noscript><style>.hub-panel[hidden]{display:block!important}.panel-bar{display:none!important}.site-footer{display:block!important}</style></noscript>
 
   <div class="hub-shell" id="top">
-    <section class="hub" aria-labelledby="hub-title">
+    <section class="hub" data-spotlight aria-labelledby="hub-title">
       <div class="hero-grid" aria-hidden="true"></div>
       <div class="hero-glow" aria-hidden="true"></div>
       <HeroSpotlight />
@@ -75,7 +75,8 @@ const entries = [
   </div>
 
   <div class="hub-panels">
-    <section class="section hub-panel" id="projects" data-hub-panel="projects" data-hub-label="项目" hidden tabindex="-1" aria-label="项目">
+    <section class="section hub-panel" id="projects" data-hub-panel="projects" data-hub-label="项目" data-spotlight hidden tabindex="-1" aria-label="项目">
+      <HeroSpotlight />
       <div class="projects-stage">
         <div class="container">
           <div class="section-heading"><div><div class="section-kicker">Selected work / 01—03</div><h2 class="section-title">正在构建的东西</h2></div><div class="section-note">一些实践，也是一段段学习记录。</div></div>
@@ -101,7 +102,8 @@ const entries = [
       </div>
     </section>
 
-    <section class="section hub-panel" id="articles" data-hub-panel="articles" data-hub-label="学习记录" hidden tabindex="-1" aria-label="学习记录">
+    <section class="section hub-panel" id="articles" data-hub-panel="articles" data-hub-label="学习记录" data-spotlight hidden tabindex="-1" aria-label="学习记录">
+      <HeroSpotlight />
       <div class="container">
         <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title"><button type="button" class="title-toggle" data-articles-gate aria-controls="week-list">网络安全实战学习记录</button></h2></div><div class="section-note">点击标题展开周目录 · 4 周 · {posts.length} 篇</div></div>
         <div class="decode-bar" aria-hidden="true"><span class="decode-prefix">&gt; DECRYPT</span><span class="decode-text" data-decode-text>LEARNING LOG · 28 FILES · 4 WEEKS · ACCESS GRANTED</span></div>
@@ -117,7 +119,8 @@ const entries = [
       </div>
     </section>
 
-    <section class="section hub-panel" id="about" data-hub-panel="about" data-hub-label="关于我" hidden tabindex="-1" aria-label="关于我">
+    <section class="section hub-panel" id="about" data-hub-panel="about" data-hub-label="关于我" data-spotlight hidden tabindex="-1" aria-label="关于我">
+      <HeroSpotlight />
       <div class="container about">
         <div><div class="section-kicker">About / 你好</div><h2 class="about-title">关于我</h2>
           <div class="whoami-term" data-whoami aria-hidden="true">
