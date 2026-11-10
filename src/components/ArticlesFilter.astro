@@ -1,0 +1,108 @@
+---
+const { weeks = [1, 2, 3, 4] } = Astro.props;
+---
+<div class="articles-filter" data-articles-filter hidden>
+  <label class="af-box">
+    <span class="af-prefix" aria-hidden="true">/</span>
+    <input type="search" data-af-input placeholder="搜索标题或关键词" aria-label="搜索文章" />
+  </label>
+  <div class="af-chips" role="group" aria-label="按周筛选">
+    <button type="button" data-af-week="all" aria-pressed="true">全部</button>
+    {weeks.map((week) => <button type="button" data-af-week={String(week)} aria-pressed="false">WEEK 0{week}</button>)}
+  </div>
+  <p class="af-status" data-af-status aria-live="polite"></p>
+  <p class="af-empty" data-af-empty hidden>没有匹配的文章 · 换个关键词试试</p>
+</div>
+
+<style>
+  .articles-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 20px; }
+  .articles-filter[hidden] { display: none !important; }
+  .af-box { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid rgba(139,92,246,.35); border-radius: 5px; background: rgba(21,13,38,.6); transition: border-color .18s, box-shadow .18s; }
+  .af-box:focus-within { border-color: rgba(139,92,246,.75); box-shadow: 0 0 0 2px rgba(124,58,237,.16); }
+  .af-prefix { color: var(--cyan); font: 12px var(--mono); }
+  .af-box input { width: min(240px, 54vw); border: 0; background: transparent; color: var(--text); font: 13px var(--sans); outline: none; }
+  .af-box input::placeholder { color: var(--subtle); }
+  .af-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .af-chips button { min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--muted); font: 11px var(--mono); letter-spacing: .05em; cursor: pointer; transition: color .18s, border-color .18s, background .18s; }
+  .af-chips button:hover { color: #c4b0ff; }
+  .af-chips button[aria-pressed="true"] { color: #c4b0ff; border-color: rgba(139,92,246,.6); background: rgba(124,58,237,.12); }
+  .af-chips button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .af-status { margin: 0 0 0 auto; color: var(--subtle); font: 10.5px var(--mono); letter-spacing: .08em; }
+  .af-empty { flex-basis: 100%; margin: 2px 0 0; padding: 12px 14px; border: 1px dashed rgba(139,92,246,.4); border-radius: 4px; color: #b9a8ff; font: 12px var(--mono); }
+
+  /* 过滤时隐藏的行/周：作者 display 规则会盖过 [hidden]，这里强制兜底 */
+  :global(.article-row[hidden]), :global(.week-group[hidden]) { display: none !important; }
+
+  @media (max-width: 700px) {
+    .af-box { flex: 1 1 100%; }
+    .af-box input { width: 100%; flex: 1; }
+    .af-status { flex-basis: 100%; margin: 0; }
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-articles-filter]');
+  const panel = document.getElementById('articles');
+
+  if (bar && panel) {
+    // 仅 JS 环境显示过滤条；无 JS 时保持隐藏、列表全量可读。
+    bar.hidden = false;
+
+    const input = bar.querySelector<HTMLInputElement>('[data-af-input]');
+    const status = bar.querySelector<HTMLElement>('[data-af-status]');
+    const empty = bar.querySelector<HTMLElement>('[data-af-empty]');
+    const chips = [...bar.querySelectorAll<HTMLButtonElement>('[data-af-week]')];
+    const gate = panel.querySelector<HTMLButtonElement>('[data-articles-gate]');
+    const weeksEl = panel.querySelector<HTMLElement>('[data-articles-weeks]');
+    const rows = [...panel.querySelectorAll<HTMLAnchorElement>('.article-row')];
+    const groups = [...panel.querySelectorAll<HTMLElement>('.week-group')];
+    const toggles = [...panel.querySelectorAll<HTMLButtonElement>('[data-week-toggle]')];
+    let week = 'all';
+
+    const setWeekOpen = (toggle: HTMLButtonElement, open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      const list = document.getElementById(toggle.getAttribute('aria-controls') || '');
+      if (list) list.hidden = !open;
+    };
+
+    const apply = () => {
+      const query = (input?.value || '').trim().toLowerCase();
+      let visible = 0;
+      rows.forEach(row => {
+        const okQuery = !query || (row.dataset.search || '').includes(query);
+        const okWeek = week === 'all' || row.dataset.week === week;
+        const show = okQuery && okWeek;
+        row.hidden = !show;
+        if (show) visible += 1;
+      });
+      const searching = Boolean(query) || week !== 'all';
+      groups.forEach(group => {
+        const hasMatch = [...group.querySelectorAll('.article-row')].some(row => !row.hidden);
+        group.hidden = !hasMatch;
+        const toggle = group.querySelector<HTMLButtonElement>('[data-week-toggle]');
+        if (hasMatch && searching && toggle) setWeekOpen(toggle, true);
+      });
+      if (gate && weeksEl) {
+        if (searching) {
+          gate.setAttribute('aria-expanded', 'true');
+          weeksEl.hidden = false;
+        } else {
+          // 清空即复位：回到手风琴默认的全收起状态。
+          gate.setAttribute('aria-expanded', 'false');
+          weeksEl.hidden = true;
+          toggles.forEach(toggle => setWeekOpen(toggle, false));
+        }
+      }
+      if (status) status.textContent = searching ? `匹配 ${visible} 篇` : `共 ${visible} 篇`;
+      if (empty) empty.hidden = visible !== 0;
+    };
+
+    chips.forEach(chip => chip.addEventListener('click', () => {
+      week = chip.dataset.afWeek || 'all';
+      chips.forEach(other => other.setAttribute('aria-pressed', String(other === chip)));
+      apply();
+    }));
+    input?.addEventListener('input', apply);
+    apply();
+  }
+</script>

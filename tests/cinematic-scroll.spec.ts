@@ -6,7 +6,7 @@ test('project panel scrubs and reverses its pinned stage', async ({ page }) => {
   await page.goto('/');
   await page.locator('[data-hub-link="projects"]').click();
   await expect(page.locator('#projects')).toBeVisible();
-  await page.evaluate(() => Promise.allSettled(document.getAnimations().map(animation => animation.finished)));
+  await expect.poll(() => page.locator('#projects').evaluate(el => getComputedStyle(el).transform)).toBe('none');
   await expect(page.locator('html')).toHaveAttribute('data-cinematic', 'true');
   const seek = async (progress: number) => {
     await page.evaluate(p => { const el = document.querySelector<HTMLElement>('#projects')!; window.scrollTo({ top: el.offsetTop + (el.offsetHeight - innerHeight) * p, behavior: 'instant' }); }, progress);
