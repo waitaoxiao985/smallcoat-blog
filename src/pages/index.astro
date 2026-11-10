@@ -107,9 +107,9 @@ const entries = [
       <HeroSpotlight />
       <div class="container">
         <div class="decode-bar" aria-hidden="true"><span class="decode-prefix">&gt; DECRYPT</span><span class="decode-text" data-decode-text>LEARNING LOG · 28 FILES · 4 WEEKS · ACCESS GRANTED</span></div>
-        <ArticlesFilter weeks={[1, 2, 3, 4]} />
         <ArticleSearch />
         <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title"><button type="button" class="title-toggle" data-articles-gate aria-controls="week-list">网络安全实战学习记录</button></h2></div><div class="section-note">点击标题展开周目录 · 4 周 · {posts.length} 篇</div></div>
+        <ArticlesFilter weeks={[1, 2, 3, 4]} />
         <div class="week-list" id="week-list" data-articles-weeks>
           {weeks.map((group) => <section class="week-group" aria-labelledby={`week-${group.week}`}>
             <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}><button type="button" class="week-toggle" data-week-toggle aria-controls={`week-articles-${group.week}`}>{group.label}</button></h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
