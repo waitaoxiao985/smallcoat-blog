@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 import { imageSize } from 'image-size';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -28,6 +29,8 @@ const rehypeImageMeta = () => (tree) => {
 };
 
 export default defineConfig({
+  site: 'https://smallcoat-blog.vercel.app',
+  integrations: [sitemap()],
   markdown: {
     shikiConfig: {
       // 紫蓝底色主题，与全站深紫配色呼应。
