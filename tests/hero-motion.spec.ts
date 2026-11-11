@@ -40,7 +40,7 @@ test('mobile entry screen fits and reading routes stay clean', async ({ page }) 
   await page.goto('/');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.locator('[data-hub-link="articles"]').click();
-  await expect(page.locator('.article-row')).toHaveCount(28);
+  await expect(page.locator('.article-row')).toHaveCount(35);
   await page.goto('/posts/day-001/');
   await expect(page.locator('.hero-grid')).toHaveCount(0);
   await expect(page.locator('.article-body')).toBeVisible();

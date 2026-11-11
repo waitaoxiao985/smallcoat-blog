@@ -28,7 +28,7 @@ test('choosing an entry opens only that section and the back control restores th
   await expect(page.locator('.hub')).toBeHidden();
   await expect(page.locator('.panel-bar')).toBeVisible();
   await expect(page.locator('.panel-label')).toHaveText('学习记录');
-  await expect(page.locator('.article-row')).toHaveCount(28);
+  await expect(page.locator('.article-row')).toHaveCount(35);
   await page.getByRole('button', { name: '返回入口' }).click();
   await expect(page.locator('.hub')).toBeVisible();
   await expect(page.locator('#articles')).toBeHidden();
@@ -55,7 +55,7 @@ test('without JavaScript every section stays readable', async ({ browser, baseUR
   await expect(page.locator('#projects')).toBeVisible();
   await expect(page.locator('#articles')).toBeVisible();
   await expect(page.locator('#about')).toBeVisible();
-  await expect(page.locator('.article-row')).toHaveCount(28);
+  await expect(page.locator('.article-row')).toHaveCount(35);
   await context.close();
 });
 

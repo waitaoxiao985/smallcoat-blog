@@ -20,9 +20,9 @@ const projects = [
   { name: 'AI_APP', description: '关于 AI 的知识百科 App，把 AI 学习装进手机里。', tech: 'JAVASCRIPT · AI', href: 'https://github.com/waitaoxiao985/AI_APP', number: '03' },
 ];
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort((a, b) => a.id.localeCompare(b.id));
-const weeks = [1, 2, 3, 4].map((week) => ({
+const weeks = [1, 2, 3, 4, 5, 6].map((week) => ({
   week,
-  label: ['破冰与实验环境', '信息搜集与侦察', '注入风险与验证', '客户端与服务端安全'][week - 1],
+  label: ['破冰与实验环境', '信息搜集与侦察', '注入风险与验证', '客户端与服务端安全', '第一阶段收官', 'SQL 注入进阶'][week - 1],
   posts: posts.filter((post) => post.data.tags.includes(`Week ${week}`)),
 }));
 const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
@@ -106,10 +106,10 @@ const entries = [
     <section class="section hub-panel" id="articles" data-hub-panel="articles" data-hub-label="学习记录" data-spotlight hidden tabindex="-1" aria-label="学习记录">
       <HeroSpotlight />
       <div class="container">
-        <div class="decode-bar" aria-hidden="true"><span class="decode-prefix">&gt; DECRYPT</span><span class="decode-text" data-decode-text>LEARNING LOG · 28 FILES · 4 WEEKS · ACCESS GRANTED</span></div>
+        <div class="decode-bar" aria-hidden="true"><span class="decode-prefix">&gt; DECRYPT</span><span class="decode-text" data-decode-text>LEARNING LOG · {posts.length} FILES · {weeks.length} WEEKS · ACCESS GRANTED</span></div>
         <ArticleSearch />
-        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—28</div><h2 class="section-title"><button type="button" class="title-toggle" data-articles-gate aria-controls="week-list">网络安全实战学习记录</button></h2></div><div class="section-note">点击标题展开周目录 · 4 周 · {posts.length} 篇</div></div>
-        <ArticlesFilter weeks={[1, 2, 3, 4]} />
+        <div class="section-heading"><div><div class="section-kicker">Learning log / Day 01—{String(posts.length).padStart(2, '0')}</div><h2 class="section-title"><button type="button" class="title-toggle" data-articles-gate aria-controls="week-list">网络安全实战学习记录</button></h2></div><div class="section-note">点击标题展开周目录 · {weeks.length} 周 · {posts.length} 篇</div></div>
+        <ArticlesFilter weeks={[1, 2, 3, 4, 5, 6]} />
         <div class="week-list" id="week-list" data-articles-weeks>
           {weeks.map((group) => <section class="week-group" aria-labelledby={`week-${group.week}`}>
             <div class="week-heading"><span class="week-number">WEEK / 0{group.week}</span><h3 id={`week-${group.week}`}><button type="button" class="week-toggle" data-week-toggle aria-controls={`week-articles-${group.week}`}>{group.label}</button></h3><span class="week-count">{String(group.posts.length).padStart(2, '0')} 篇</span></div>
@@ -133,7 +133,7 @@ const entries = [
               <p data-line><span class="whoami-prompt">$</span><span class="whoami-typed">cat focus.txt</span></p>
               <p data-line><span class="whoami-typed">Python 深入中 · Web 安全 · CTF</span></p>
               <p data-line><span class="whoami-prompt">$</span><span class="whoami-typed">./status --now</span></p>
-              <p data-line><span class="whoami-typed">[OK] 学习进度 Day 28 / ∞ · 保持好奇</span></p>
+              <p data-line><span class="whoami-typed">[OK] 学习进度 Day {posts.length} / ∞ · 保持好奇</span></p>
             </div>
           </div>
         </div>

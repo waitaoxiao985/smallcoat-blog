@@ -30,10 +30,10 @@ test('no JavaScript or observer support leaves content visible and links usable'
   const context = await browser.newContext({ javaScriptEnabled: false });
   const noJS = await context.newPage();
   await noJS.goto(baseURL!);
-  await expect(noJS.locator('.article-row')).toHaveCount(28);
+  await expect(noJS.locator('.article-row')).toHaveCount(35);
   await expect(noJS.locator('.article-list').last()).toHaveCSS('opacity', '1');
   await noJS.locator('.article-row').last().click();
-  await expect(noJS).toHaveURL(/day-028\/$/);
+  await expect(noJS).toHaveURL(/day-035\/$/);
   await context.close();
   await page.addInitScript(() => { Object.defineProperty(window, 'IntersectionObserver', { value: undefined }); });
   await page.goto('/');

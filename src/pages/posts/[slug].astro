@@ -14,7 +14,7 @@ const previousPost = allPosts.find((entry) => entry.id === `day-${String(dayNumb
 const nextPost = allPosts.find((entry) => entry.id === `day-${String(dayNumber + 1).padStart(3, '0')}`);
 const weekTag = post.data.tags.find((tag) => tag.startsWith('Week ')) ?? 'Week 1';
 const weekNumber = Number(weekTag.replace('Week ', '')) || 1;
-const weekLabels = ['破冰与实验环境', '信息搜集与侦察', '注入风险与验证', '客户端与服务端安全'];
+const weekLabels = ['破冰与实验环境', '信息搜集与侦察', '注入风险与验证', '客户端与服务端安全', '第一阶段收官', 'SQL 注入进阶'];
 ---
 <BaseLayout title={`${post.data.title} — SmalLCoat`} description={post.data.description}>
   <main class="post-page">
