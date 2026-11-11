@@ -70,6 +70,8 @@
       results.replaceChildren();
       const idle = document.createElement('p');
       idle.className = 'sc-idle';
+      // 重置时保持与初始标记一致，选择器 [data-sc-idle] 才始终有效。
+      idle.dataset.scIdle = '';
       idle.textContent = '> 待命 · 输入关键词后按 Enter 检索全部学习记录';
       results.appendChild(idle);
     };

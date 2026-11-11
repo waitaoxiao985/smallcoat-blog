@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('mouse spotlight follows the pointer inside the entry screen', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  const light = page.locator('.hero-spotlight');
+  const light = page.locator('.hub .hero-spotlight');
   await expect(light).toHaveCount(1);
   await page.mouse.move(280, 230);
   await expect(page.locator('.hub')).toHaveAttribute('data-spotlight-active', 'true');
@@ -25,7 +25,7 @@ test('reduced-motion setting disables and clears an active spotlight', async ({ 
   await expect(page.locator('.hub')).toHaveAttribute('data-spotlight-active', 'true');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('.hub')).not.toHaveAttribute('data-spotlight-active');
-  await expect(page.locator('.hero-spotlight')).toBeHidden();
+  await expect(page.locator('.hub .hero-spotlight')).toBeHidden();
   await page.mouse.move(600, 350);
   await expect(page.locator('.hub')).not.toHaveAttribute('data-spotlight-active');
 });
@@ -36,7 +36,7 @@ test('touch devices and article pages have no active spotlight', async ({ browse
   await page.goto(baseURL!);
   await page.touchscreen.tap(220, 280);
   await expect(page.locator('.hub')).not.toHaveAttribute('data-spotlight-active');
-  await expect(page.locator('.hero-spotlight')).toBeHidden();
+  await expect(page.locator('.hub .hero-spotlight')).toBeHidden();
   await page.goto(new URL('/posts/day-001/', page.url()).href);
   await expect(page.locator('.hero-spotlight')).toHaveCount(0);
   await context.close();

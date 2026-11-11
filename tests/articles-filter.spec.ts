@@ -20,7 +20,7 @@ test('choosing a week shows only that week, expanded', async ({ page }) => {
   await openArticles(page);
   await page.locator('[data-af-week="2"]').click();
   await expect(page.locator('#articles .week-group:not([hidden])')).toHaveCount(1);
-  await expect(page.locator('#articles .week-group:not([hidden])')).toHaveAttribute('id', 'week-2');
+  await expect(page.locator('#articles .week-group:not([hidden])')).toHaveAttribute('aria-labelledby', 'week-2');
   await expect(page.locator('#week-articles-2')).toBeVisible();
   await expect(page.locator('[data-week-toggle][aria-controls="week-articles-2"]')).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('#articles .article-row:visible')).toHaveCount(7);

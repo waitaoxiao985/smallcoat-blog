@@ -11,16 +11,19 @@ test('project panel scrubs and reverses its pinned stage', async ({ page }) => {
   const seek = async (progress: number) => {
     await page.evaluate(p => { const el = document.querySelector<HTMLElement>('#projects')!; window.scrollTo({ top: el.offsetTop + (el.offsetHeight - innerHeight) * p, behavior: 'instant' }); }, progress);
   };
+  const titles = await page.locator('.project-title').evaluateAll(elements => elements.map(element => element.textContent!.trim()));
+  expect(titles.length).toBe(3);
+  const activeTitle = () => page.locator('.project[data-active="true"] .project-title');
   await seek(.5);
-  await expect(page.locator('.project[data-active="true"] .project-title')).toHaveText('Cyber_Platform');
+  await expect(activeTitle()).toHaveText(titles[1]);
   const stageTop = await page.locator('.projects-stage').evaluate(el => el.getBoundingClientRect().top);
   expect(Math.abs(stageTop - 56)).toBeLessThan(2);
   await seek(1);
-  await expect(page.locator('.project[data-active="true"] .project-title')).toHaveText('CyberSpace_Notes');
+  await expect(activeTitle()).toHaveText(titles[2]);
   await seek(0);
-  await expect(page.locator('.project[data-active="true"] .project-title')).toHaveText('SecGuard');
+  await expect(activeTitle()).toHaveText(titles[0]);
   await page.getByRole('button', { name: '展示项目 3' }).click();
-  await expect(page.locator('.project[data-active="true"] .project-title')).toHaveText('CyberSpace_Notes');
+  await expect(activeTitle()).toHaveText(titles[2]);
   await page.screenshot({ path: 'test-results/project-stage.png' });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

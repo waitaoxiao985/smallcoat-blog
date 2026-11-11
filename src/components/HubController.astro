@@ -46,7 +46,11 @@
   back?.addEventListener('click', () => setState('', true));
 
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && document.documentElement.classList.contains('hub-mode')) setState('', true);
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    const target = event.target as HTMLElement | null;
+    // 在输入框里按 ESC 是「清空输入」，不应该把用户踢回入口页。
+    if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+    if (document.documentElement.classList.contains('hub-mode')) setState('', true);
   });
 
   const syncFromLocation = () => {
