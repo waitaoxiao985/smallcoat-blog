@@ -9,60 +9,143 @@ import '../styles/cinematic.css';
   const counter = projects?.querySelector<HTMLElement>('.project-position');
   const media = matchMedia('(min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)');
   const clamp = (value: number) => Math.max(0, Math.min(1, value));
+
   let frame = 0;
   let currentActive = 0;
+  let wheelAccum = 0;
+  let wheelResetTimer = 0;
+  let wheelTargetIndex: number | null = null;
+  let wheelLockedUntil = 0;
+  let snapTimer = 0;
 
-  function render() {
-    frame = 0;
-    if (!media.matches || !projects) return;
-    const progress = clamp(-projects.getBoundingClientRect().top / Math.max(1, projects.offsetHeight - innerHeight));
-    const position = progress * (panels.length - 1);
-    const active = Math.round(position);
+  const stageSpan = () => Math.max(1, (projects?.offsetHeight ?? 0) - innerHeight);
+  const stageStart = () => (projects ? projects.getBoundingClientRect().top + scrollY : 0);
+  const stopTop = (index: number) => {
+    if (!projects) return 0;
+    return stageStart() + stageSpan() * index / Math.max(1, panels.length - 1);
+  };
+
+  function applyActiveState(active: number, progress: number) {
     currentActive = active;
     panels.forEach((panel, index) => {
-      const distance = index - position;
       const isActive = index === active;
       panel.dataset.active = String(isActive);
+      panel.dataset.position = index < active ? 'before' : index > active ? 'after' : 'current';
       panel.inert = !isActive;
-      panel.style.opacity = String(clamp(1 - Math.abs(distance) * 1.3));
-      panel.style.transform = `perspective(1100px) translate3d(${distance * 95}px,${distance * 48}px,${-Math.abs(distance) * 180}px) rotateX(${distance * -8}deg) scale(${1 - Math.min(1, Math.abs(distance)) * .12})`;
-      panel.style.visibility = Math.abs(distance) > 1 ? 'hidden' : 'visible';
     });
     buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(index === active)));
     if (counter) counter.textContent = `${String(active + 1).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}`;
-    projects.style.setProperty('--scene-progress', String(progress));
+    projects?.style.setProperty('--scene-progress', String(progress));
+  }
+
+  function render() {
+    frame = 0;
+    if (!media.matches || !projects || projects.hidden) return;
+    const progress = clamp(-projects.getBoundingClientRect().top / stageSpan());
+    const scrollActive = Math.round(progress * (panels.length - 1));
+    if (wheelTargetIndex !== null) {
+      if (Math.abs(scrollY - stopTop(wheelTargetIndex)) <= 6 || performance.now() >= wheelLockedUntil) {
+        wheelTargetIndex = null;
+      }
+    }
+    const active = wheelTargetIndex !== null ? wheelTargetIndex : scrollActive;
+    applyActiveState(active, progress);
+  }
+
+  function scheduleSnap() {
+    window.clearTimeout(snapTimer);
+    if (!media.matches || root.dataset.cinematic !== 'true' || !projects || projects.hidden) return;
+    snapTimer = window.setTimeout(() => {
+      if (!media.matches || root.dataset.cinematic !== 'true' || !projects || projects.hidden) return;
+      if (wheelTargetIndex !== null) return;
+      const start = stageStart();
+      const end = start + stageSpan();
+      if (scrollY < start || scrollY > end) return;
+      const target = stopTop(currentActive);
+      if (Math.abs(scrollY - target) > 4) {
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      }
+    }, 180);
   }
 
   function schedule() {
     if (media.matches && !frame) frame = requestAnimationFrame(render);
+    scheduleSnap();
   }
 
   function jumpTo(index: number) {
     if (!projects) return;
     const clamped = Math.max(0, Math.min(panels.length - 1, index));
-    const top = projects.getBoundingClientRect().top + scrollY;
-    window.scrollTo({
-      top: top + (projects.offsetHeight - innerHeight) * clamped / Math.max(1, panels.length - 1),
-      behavior: 'instant',
-    });
-    schedule();
+    wheelTargetIndex = null;
+    wheelAccum = 0;
+    wheelLockedUntil = 0;
+    window.clearTimeout(snapTimer);
+    window.scrollTo({ top: stopTop(clamped), behavior: 'instant' });
+    render();
   }
 
   function configure() {
     cancelAnimationFrame(frame);
     frame = 0;
+    wheelTargetIndex = null;
+    wheelAccum = 0;
+    wheelLockedUntil = 0;
+    window.clearTimeout(snapTimer);
+    window.clearTimeout(wheelResetTimer);
     if (media.matches && projects) {
+      if (!projects.hidden) {
+        const progress = clamp(-projects.getBoundingClientRect().top / stageSpan());
+        applyActiveState(Math.round(progress * (panels.length - 1)), progress);
+      }
       root.dataset.cinematic = 'true';
-      render();
     } else {
       root.removeAttribute('data-cinematic');
       panels.forEach((panel) => {
         panel.inert = false;
         panel.removeAttribute('data-active');
+        panel.removeAttribute('data-position');
         ['opacity', 'transform', 'visibility'].forEach((property) => panel.style.removeProperty(property));
       });
     }
   }
+
+  window.addEventListener('wheel', (event) => {
+    if (!media.matches || root.dataset.cinematic !== 'true' || !projects || projects.hidden) return;
+    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+    const end = stageStart() + stageSpan();
+    if (scrollY > end + 8) return;
+
+    const dir = event.deltaY > 0 ? 1 : event.deltaY < 0 ? -1 : 0;
+    if (!dir) return;
+
+    const baseIndex = wheelTargetIndex !== null ? wheelTargetIndex : currentActive;
+    if ((dir < 0 && baseIndex === 0) || (dir > 0 && baseIndex === panels.length - 1)) return;
+
+    event.preventDefault();
+
+    const now = performance.now();
+    if (now < wheelLockedUntil) return;
+
+    wheelAccum += event.deltaY;
+    window.clearTimeout(wheelResetTimer);
+    wheelResetTimer = window.setTimeout(() => { wheelAccum = 0; }, 140);
+
+    if (Math.abs(wheelAccum) < 28) return;
+
+    const stepDir = wheelAccum > 0 ? 1 : -1;
+    wheelAccum = 0;
+    const nextIndex = Math.max(0, Math.min(panels.length - 1, baseIndex + stepDir));
+    if (nextIndex === baseIndex) return;
+
+    wheelTargetIndex = nextIndex;
+    wheelLockedUntil = now + 420;
+    window.clearTimeout(snapTimer);
+
+    const progress = nextIndex / Math.max(1, panels.length - 1);
+    applyActiveState(nextIndex, progress);
+    window.scrollTo({ top: stopTop(nextIndex), behavior: 'smooth' });
+  }, { passive: false });
 
   buttons.forEach((button, index) => {
     button.addEventListener('click', () => jumpTo(index));
