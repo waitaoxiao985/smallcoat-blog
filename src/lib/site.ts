@@ -89,6 +89,12 @@ export const WEEK_META: WeekMeta[] = [
     stage: '第二阶段 · 攻坚深入',
     summary: '布尔盲注、时间盲注、报错注入、WAF 绕过、二次注入与宽字节注入。',
   },
+  {
+    week: 7,
+    label: '客户端与身份安全',
+    stage: '第二阶段 · 认证与授权',
+    summary: '浏览器接管风险、XSS 复盘、水平/垂直越权、JWT 算法与弱密钥、密码重置逻辑漏洞。',
+  },
 ];
 
 export const ABOUT_SKILLS: SkillGroup[] = [

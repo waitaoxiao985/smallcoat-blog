@@ -17,7 +17,7 @@ test('panel bar switches directly between sections and updates document title', 
   await expect(page.locator('#about')).toBeVisible();
   await expect(page.locator('.panel-label')).toHaveText('关于我');
   await expect(page.locator('.about-skills')).toBeVisible();
-  await expect(page.locator('.roadmap-item')).toHaveCount(6);
+  await expect(page.locator('.roadmap-item')).toHaveCount(7);
 });
 
 test('search supports multi-word AND matching, highlights, quick chips, and / shortcut', async ({ page }) => {

@@ -48,6 +48,12 @@ export const TAG_SLUGS: Record<string, string> = {
   'WAF 绕过': 'waf-bypass',
   '二次注入': 'second-order-sqli',
   '宽字节': 'wide-byte-sqli',
+  '客户端安全': 'client-security',
+  '越权漏洞': 'broken-access-control',
+  '访问控制': 'access-control',
+  '身份认证': 'authentication',
+  JWT: 'jwt',
+  '逻辑漏洞': 'business-logic',
 };
 
 export function tagToSlug(tag: string): string {

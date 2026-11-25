@@ -2,14 +2,15 @@ import { test, expect } from '@playwright/test';
 
 const NEW_POSTS = ['day-029', 'day-030', 'day-031', 'day-032', 'day-033', 'day-034', 'day-035'];
 
-test('articles panel lists six weeks including the new ones', async ({ page }) => {
+test('articles panel lists seven weeks including the new ones', async ({ page }) => {
   await page.goto('/');
   await page.locator('[data-hub-link="articles"]').click();
-  await expect(page.locator('#articles .week-group')).toHaveCount(6);
+  await expect(page.locator('#articles .week-group')).toHaveCount(7);
   await expect(page.locator('#week-5')).toHaveText('第一阶段收官');
   await expect(page.locator('#week-6')).toHaveText('SQL 注入进阶');
-  await expect(page.locator('#articles .article-row')).toHaveCount(35);
-  await expect(page.locator('[data-af-status]')).toHaveText('共 35 篇');
+  await expect(page.locator('#week-7')).toHaveText('客户端与身份安全');
+  await expect(page.locator('#articles .article-row')).toHaveCount(42);
+  await expect(page.locator('[data-af-status]')).toHaveText('共 42 篇');
 });
 
 test('each new post page renders with its images', async ({ page, request }) => {

@@ -6,14 +6,14 @@ const openArticles = async (page: import('@playwright/test').Page) => {
   await expect(page.locator('#articles')).toBeVisible();
 };
 
-test('week filter shows seven chips and the total count', async ({ page }) => {
+test('week filter shows eight chips and the total count', async ({ page }) => {
   await openArticles(page);
   const bar = page.locator('[data-articles-filter]');
   await expect(bar).toBeVisible();
   const chips = bar.locator('[data-af-week]');
-  await expect(chips).toHaveCount(7);
+  await expect(chips).toHaveCount(8);
   await expect(chips.first()).toHaveText('全部');
-  await expect(bar.locator('[data-af-status]')).toHaveText('共 35 篇');
+  await expect(bar.locator('[data-af-status]')).toHaveText('共 42 篇');
 });
 
 test('choosing a week shows only that week, expanded', async ({ page }) => {
@@ -30,6 +30,9 @@ test('choosing a week shows only that week, expanded', async ({ page }) => {
 
 test('the newest weeks are selectable and hold the imported notes', async ({ page }) => {
   await openArticles(page);
+  await page.locator('[data-af-week="7"]').click();
+  await expect(page.locator('#articles .article-row:visible')).toHaveCount(7);
+  await expect(page.locator('#week-7')).toHaveText('客户端与身份安全');
   await page.locator('[data-af-week="6"]').click();
   await expect(page.locator('#articles .article-row:visible')).toHaveCount(5);
   await expect(page.locator('#week-6')).toHaveText('SQL 注入进阶');
@@ -40,12 +43,12 @@ test('the newest weeks are selectable and hold the imported notes', async ({ pag
 
 test('returning to all restores the collapsed default list', async ({ page }) => {
   await openArticles(page);
-  await page.locator('[data-af-week="6"]').click();
+  await page.locator('[data-af-week="7"]').click();
   await page.locator('[data-af-week="all"]').click();
   await expect(page.locator('[data-articles-gate]')).toHaveAttribute('aria-expanded', 'false');
   await expect(page.locator('[data-articles-weeks]')).toBeHidden();
-  await expect(page.locator('[data-af-status]')).toHaveText('共 35 篇');
-  await expect(page.locator('#articles .week-group:not([hidden])')).toHaveCount(6);
+  await expect(page.locator('[data-af-status]')).toHaveText('共 42 篇');
+  await expect(page.locator('#articles .week-group:not([hidden])')).toHaveCount(7);
 });
 
 test('without JavaScript the filter stays hidden and every article is reachable', async ({ browser, baseURL }) => {
@@ -53,7 +56,7 @@ test('without JavaScript the filter stays hidden and every article is reachable'
   const page = await context.newPage();
   await page.goto(baseURL!);
   await expect(page.locator('[data-articles-filter]')).toBeHidden();
-  await expect(page.locator('.article-row')).toHaveCount(35);
+  await expect(page.locator('.article-row')).toHaveCount(42);
   await expect(page.locator('.article-row').last()).toBeVisible();
   await context.close();
 });
@@ -62,5 +65,5 @@ test('mobile filter row fits without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openArticles(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(page.locator('[data-af-week="6"]')).toBeVisible();
+  await expect(page.locator('[data-af-week="7"]')).toBeVisible();
 });
