@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import BackToTop from '../../components/BackToTop.astro';
+import { formatDayLabel, getAllTags, getPublishedPosts } from '../../lib/posts';
+import { SITE } from '../../lib/site';
+
+const posts = await getPublishedPosts('asc');
+const tags = getAllTags(posts);
+const featuredTags = tags.filter((item) => item.count >= 2 && item.tag !== '网络安全').slice(0, 6);
+---
+<BaseLayout
+  title={`标签索引 — ${SITE.name}`}
+  description={`浏览 ${SITE.name} 博客的全部 ${tags.length} 个技术主题标签，按专题检索 ${posts.length} 篇学习笔记。`}
+>
+  <SiteHeader active="tags" />
+
+  <main class="subpage" id="main-content">
+    <div class="container">
+      <div class="subpage-console">
+        <header class="console-bar">
+          <span>SC / TAG INDEX</span>
+          <span class="console-stat">{tags.length} TAGS · {posts.length} FILES</span>
+        </header>
+
+        <div class="subpage-head">
+          <div class="section-kicker">Topics / 主题标签</div>
+          <h1 class="subpage-title">按主题检索学习记录</h1>
+          <p class="subpage-desc">共收录 {tags.length} 个主题标签，覆盖 {posts.length} 篇编程与网络安全实战笔记。</p>
+        </div>
+
+        <section class="tag-grid" aria-label="全部标签">
+          {tags.map((item) => {
+            const tier = item.count >= 5 ? 'high' : item.count >= 2 ? 'mid' : 'base';
+            return (
+              <a class="tag-card" href={`/tags/${item.slug}/`} data-tier={tier} data-tag-card>
+                <span class="tag-name">#{item.tag}</span>
+                <span class="tag-count">{String(item.count).padStart(2, '0')} 篇</span>
+              </a>
+            );
+          })}
+        </section>
+
+        {featuredTags.length > 0 && (
+          <section class="featured-topics" aria-label="高频专题速览">
+            <div class="section-kicker">Highlights / 专题精选</div>
+            <div class="topic-cards">
+              {featuredTags.map((item) => (
+                <div class="topic-card">
+                  <div class="topic-card-head">
+                    <a class="topic-title" href={`/tags/${item.slug}/`}>#{item.tag}</a>
+                    <span class="topic-meta">{item.count} 篇</span>
+                  </div>
+                  <ul class="topic-list">
+                    {item.posts.slice(0, 3).map((post) => (
+                      <li>
+                        <a href={`/posts/${post.id}/`}>
+                          <span class="topic-day">{formatDayLabel(post.id)}</span>
+                          <span class="topic-post">{post.data.title}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  </main>
+
+  <SiteFooter />
+  <BackToTop />
+
+  <style>
+    .subpage { min-height: calc(100svh - 135px); padding: 42px 0 76px; }
+    .subpage-console {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(28, 18, 51, .52), rgba(28, 18, 51, .18));
+      padding: clamp(20px, 3.5vw, 36px);
+      box-shadow: inset 0 0 60px rgba(86, 217, 245, .03), 0 24px 60px rgba(0, 0, 0, .26);
+    }
+    .console-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font: 500 11px var(--mono);
+      letter-spacing: .12em;
+    }
+    .console-stat { color: var(--cyan); }
+    .subpage-head { margin-top: 24px; }
+    .subpage-title { margin: 10px 0 8px; font-size: clamp(28px, 4.5vw, 40px); letter-spacing: -.045em; }
+    .subpage-desc { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.75; }
+
+    .tag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .tag-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: rgba(21, 13, 38, .6);
+      color: var(--text);
+      font-size: 13.5px;
+      transition: border-color .18s, color .18s, background .18s, transform .18s;
+    }
+    .tag-card[data-tier="high"] {
+      border-color: rgba(86, 217, 245, .36);
+      background: rgba(86, 217, 245, .06);
+    }
+    .tag-card[data-tier="mid"] {
+      border-color: rgba(139, 92, 246, .36);
+    }
+    .tag-card:hover {
+      border-color: rgba(86, 217, 245, .65);
+      color: var(--cyan);
+      transform: translateY(-1px);
+    }
+    .tag-card:focus-visible,
+    .topic-title:focus-visible,
+    .topic-list a:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .tag-count { color: var(--cyan); font: 11px var(--mono); }
+
+    .featured-topics {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+    .topic-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .topic-card {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: rgba(21, 13, 38, .48);
+    }
+    .topic-card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(183, 168, 226, .1);
+    }
+    .topic-title {
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .topic-title:hover { color: var(--cyan); }
+    .topic-meta { color: var(--cyan); font: 11px var(--mono); }
+    .topic-list {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .topic-list a {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .topic-list a:hover { color: var(--cyan); }
+    .topic-day { flex-shrink: 0; color: var(--cyan); font: 10px var(--mono); }
+    .topic-post { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</BaseLayout>

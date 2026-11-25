@@ -1,0 +1,65 @@
+---
+---
+<button type="button" class="back-to-top" data-back-to-top aria-label="返回顶部" hidden>
+  <span>↑</span>
+  <span>TOP</span>
+</button>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 25;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 13px;
+    border: 1px solid rgba(86, 217, 245, .36);
+    border-radius: 8px;
+    background: rgba(21, 13, 38, .9);
+    backdrop-filter: blur(8px);
+    color: var(--cyan);
+    font: 500 11px var(--mono);
+    letter-spacing: .08em;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .4);
+    transition: border-color .18s ease, transform .18s ease, background .18s ease;
+  }
+  .back-to-top[hidden] {
+    display: none;
+  }
+  .back-to-top:hover {
+    border-color: rgba(86, 217, 245, .75);
+    background: rgba(28, 18, 51, .95);
+    transform: translateY(-2px);
+  }
+  .back-to-top:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
+  @media (max-width: 700px) {
+    .back-to-top {
+      right: 16px;
+      bottom: 16px;
+    }
+  }
+</style>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (button) {
+    const sync = () => {
+      button.hidden = window.scrollY < 420;
+    };
+    window.addEventListener('scroll', sync, { passive: true });
+    button.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'instant' : 'smooth' });
+    });
+    sync();
+  }
+</script>

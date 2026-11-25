@@ -1,24 +1,38 @@
 <script>
-  // 首页入口控制台：点击板块进入，返回入口恢复；支持深链、浏览器返回与 Esc。
+  // 首页入口控制台：点击板块进入，返回入口恢复；支持深链、浏览器返回、顶栏切换、数字快捷键与 Esc。
   const shell = document.querySelector<HTMLElement>('.hub-shell');
-  const hub = document.querySelector<HTMLElement>('.hub');
   const panels = [...document.querySelectorAll<HTMLElement>('[data-hub-panel]')];
   const bar = document.querySelector<HTMLElement>('.panel-bar');
   const label = document.querySelector<HTMLElement>('.panel-label');
   const back = document.querySelector<HTMLButtonElement>('.panel-back');
   const entries = [...document.querySelectorAll<HTMLAnchorElement>('[data-hub-link]')];
+  const switches = [...document.querySelectorAll<HTMLButtonElement>('[data-panel-switch]')];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const defaultTitle = document.title;
+  const siteBrand = 'SmalLCoat';
 
-  const panelFor = (id: string) => panels.find(panel => panel.dataset.hubPanel === id);
+  const panelFor = (id: string) => panels.find((panel) => panel.dataset.hubPanel === id);
+
+  function syncMeta(panel?: HTMLElement) {
+    const panelId = panel?.dataset.hubPanel || '';
+    const panelName = panel?.dataset.hubLabel || '';
+    if (label) label.textContent = panelName;
+    document.title = panelName ? `${panelName} — ${siteBrand}` : defaultTitle;
+    switches.forEach((btn) => {
+      if (btn.dataset.panelSwitch === panelId) btn.setAttribute('aria-current', 'page');
+      else btn.removeAttribute('aria-current');
+    });
+  }
 
   function setState(id: string, push = false) {
     const panel = panelFor(id);
     document.documentElement.classList.toggle('hub-mode', Boolean(panel));
     if (shell) shell.hidden = Boolean(panel);
-    panels.forEach(item => { item.hidden = item !== panel; });
+    panels.forEach((item) => { item.hidden = item !== panel; });
     if (bar) bar.hidden = !panel;
+    syncMeta(panel);
+
     if (panel) {
-      if (label) label.textContent = panel.dataset.hubLabel || '';
       if (push) history.pushState({ panel: id }, '', `#${id}`);
       window.scrollTo({ top: 0, behavior: 'instant' });
       panel.focus({ preventScroll: true });
@@ -39,18 +53,40 @@
     window.dispatchEvent(new Event('resize'));
   }
 
-  entries.forEach(entry => entry.addEventListener('click', event => {
+  entries.forEach((entry) => entry.addEventListener('click', (event) => {
     event.preventDefault();
     setState(entry.dataset.hubLink!, true);
   }));
+
+  switches.forEach((button) => button.addEventListener('click', () => {
+    const targetId = button.dataset.panelSwitch || '';
+    if (targetId) setState(targetId, true);
+  }));
+
   back?.addEventListener('click', () => setState('', true));
 
-  document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' || event.defaultPrevented) return;
+  document.addEventListener('keydown', (event) => {
     const target = event.target as HTMLElement | null;
-    // 在输入框里按 ESC 是「清空输入」，不应该把用户踢回入口页。
     if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
-    if (document.documentElement.classList.contains('hub-mode')) setState('', true);
+
+    if (event.key === 'Escape' && !event.defaultPrevented) {
+      if (document.documentElement.classList.contains('hub-mode')) setState('', true);
+      return;
+    }
+
+    if (
+      !document.documentElement.classList.contains('hub-mode') &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey
+    ) {
+      const keyMap: Record<string, string> = { '1': 'projects', '2': 'articles', '3': 'about' };
+      const targetPanel = keyMap[event.key];
+      if (targetPanel) {
+        event.preventDefault();
+        setState(targetPanel, true);
+      }
+    }
   });
 
   const syncFromLocation = () => {
@@ -64,9 +100,12 @@
 
   // 初始状态：带板块深链时直接进入对应板块。
   const initial = panelFor(location.hash.slice(1));
-  panels.forEach(panel => { panel.hidden = panel !== initial; });
+  panels.forEach((panel) => { panel.hidden = panel !== initial; });
   document.documentElement.classList.toggle('hub-mode', Boolean(initial));
   if (shell) shell.hidden = Boolean(initial);
   if (bar) bar.hidden = !initial;
-  if (initial && label) label.textContent = initial.dataset.hubLabel || '';
+  syncMeta(initial);
+  if (initial) {
+    window.dispatchEvent(new CustomEvent('hub:panelchange', { detail: initial.dataset.hubPanel }));
+  }
 </script>

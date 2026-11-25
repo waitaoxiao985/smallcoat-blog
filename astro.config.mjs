@@ -4,7 +4,8 @@ import { imageSize } from 'image-size';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// 文章 Markdown 图片：懒加载 + 构建时读出真实宽高写进属性，消除加载跳动（CLS）。
+// 文章 Markdown 图片：懒加载 + 构建时读出真实宽高写进属性，消除加载跳动（CLS），
+// 并将带 alt 说明的独立图片段落自动升级为合法语义的 <figure><figcaption> 结构。
 const rehypeImageMeta = () => (tree) => {
   const walk = (node) => {
     if (node.tagName === 'img') {
@@ -23,7 +24,31 @@ const rehypeImageMeta = () => (tree) => {
         }
       }
     }
+
     (node.children || []).forEach(walk);
+
+    if (node.tagName === 'p' && Array.isArray(node.children)) {
+      const meaningful = node.children.filter(
+        (child) => !(child.type === 'text' && !child.value.trim()),
+      );
+      if (meaningful.length === 1 && meaningful[0].tagName === 'img') {
+        const img = meaningful[0];
+        const alt = typeof img.properties?.alt === 'string' ? img.properties.alt.trim() : '';
+        if (alt) {
+          node.tagName = 'figure';
+          node.properties = { className: ['article-figure'] };
+          node.children = [
+            img,
+            {
+              type: 'element',
+              tagName: 'figcaption',
+              properties: {},
+              children: [{ type: 'text', value: alt }],
+            },
+          ];
+        }
+      }
+    }
   };
   walk(tree);
 };

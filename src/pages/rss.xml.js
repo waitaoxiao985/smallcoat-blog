@@ -1,13 +1,12 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../lib/posts';
+import { SITE } from '../lib/site';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft))
-  .sort((a, b) => b.id.localeCompare(a.id));
-
-export function GET(context) {
+export async function GET(context) {
+  const posts = await getPublishedPosts('desc');
   return rss({
-    title: 'SmalLCoat — 以代码为笔，探索技术的无限可能。',
-    description: 'SmalLCoat 的个人技术博客，记录编程实践与网络安全学习。',
+    title: SITE.title,
+    description: SITE.description,
     site: context.site,
     items: posts.map((post) => ({
       title: post.data.title,
@@ -16,6 +15,6 @@ export function GET(context) {
       pubDate: post.data.pubDate,
       categories: post.data.tags,
     })),
-    customData: '<language>zh-CN</language>',
+    customData: `<language>zh-CN</language><copyright>© ${new Date().getUTCFullYear()} ${SITE.author}</copyright>`,
   });
 }

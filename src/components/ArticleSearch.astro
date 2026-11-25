@@ -1,42 +1,74 @@
 ---
+const quickKeywords = ['SQL 注入', 'XSS', 'Burp Suite', 'Nmap', '盲注', 'WAF'];
 ---
 <section class="search-console" data-article-search aria-label="文章搜索">
   <header class="sc-bar">
     <span class="sc-title">SC / SEARCH CONSOLE</span>
-    <span class="sc-hint">ENTER 执行 · ESC 清空</span>
+    <span class="sc-hint">按 / 聚焦 · ENTER 执行 · ESC 清空</span>
   </header>
   <form class="sc-form" data-sc-form role="search">
     <span class="sc-prompt" aria-hidden="true">$ grep -i</span>
-    <input class="sc-input" type="search" data-sc-input placeholder="输入标题或关键词…" aria-label="搜索学习记录" autocomplete="off" />
+    <input
+      class="sc-input"
+      type="search"
+      data-sc-input
+      placeholder="输入标题、标签或章节关键词（支持空格多词检索）…"
+      aria-label="搜索学习记录"
+      autocomplete="off"
+    />
     <button class="sc-run" type="submit">ENTER ↵</button>
   </form>
+  <div class="sc-quick" aria-label="常用搜索词">
+    <span class="sc-quick-label">HOT:</span>
+    {quickKeywords.map((kw) => (
+      <button type="button" class="sc-quick-chip" data-sc-quick={kw}>{kw}</button>
+    ))}
+  </div>
   <div class="sc-results" data-sc-results aria-live="polite">
     <p class="sc-idle" data-sc-idle>&gt; 待命 · 输入关键词后按 Enter 检索全部学习记录</p>
   </div>
 </section>
 
 <style>
-  .search-console { margin-top: 34px; border: 1px solid var(--line); border-radius: 8px; background: rgba(21, 13, 38, .55); overflow: hidden; }
+  .search-console { margin-top: 22px; border: 1px solid var(--line); border-radius: 8px; background: rgba(21, 13, 38, .55); overflow: hidden; }
   .sc-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
   .sc-title { color: var(--muted); font: 500 10.5px var(--mono); letter-spacing: .14em; }
   .sc-hint { color: var(--subtle); font: 10px var(--mono); letter-spacing: .1em; }
-  .sc-form { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; }
+  .sc-form { display: flex; align-items: center; gap: 10px; padding: 14px 16px 8px; }
   .sc-prompt { color: var(--cyan); font: 12.5px var(--mono); white-space: nowrap; }
   .sc-input { flex: 1; min-width: 0; min-height: 40px; padding: 0 10px; border: 1px solid rgba(139,92,246,.35); border-radius: 5px; background: rgba(21,13,38,.6); color: var(--text); font: 13px var(--sans); outline: none; transition: border-color .18s, box-shadow .18s; }
   .sc-input:focus { border-color: rgba(139,92,246,.75); box-shadow: 0 0 0 2px rgba(124,58,237,.16); }
   .sc-input::placeholder { color: var(--subtle); }
   .sc-run { min-height: 40px; padding: 0 14px; border: 1px solid rgba(139,92,246,.6); border-radius: 5px; background: rgba(124,58,237,.12); color: #c4b0ff; font: 500 11px var(--mono); letter-spacing: .08em; cursor: pointer; transition: color .18s, border-color .18s, background .18s; }
   .sc-run:hover { color: #ddd0ff; border-color: rgba(139,92,246,.85); background: rgba(124,58,237,.2); }
-  .sc-run:focus-visible, .sc-input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
-  .sc-results { padding: 10px 16px 14px; }
+  .sc-run:focus-visible, .sc-input:focus-visible, .sc-quick-chip:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .sc-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 16px 8px; }
+  .sc-quick-label { color: var(--subtle); font: 10px var(--mono); letter-spacing: .08em; margin-right: 2px; }
+  .sc-quick-chip {
+    min-height: 28px;
+    padding: 0 9px;
+    border: 1px solid rgba(183, 168, 226, .16);
+    border-radius: 4px;
+    background: rgba(28, 18, 51, .65);
+    color: var(--muted);
+    font: 11px var(--mono);
+    cursor: pointer;
+    transition: color .16s, border-color .16s, background .16s;
+  }
+  .sc-quick-chip:hover { color: var(--cyan); border-color: rgba(86, 217, 245, .45); background: rgba(86, 217, 245, .07); }
+  .sc-results { padding: 8px 16px 14px; }
   /* 结果条目由脚本动态创建，没有 scoped 属性，需用 :global 命中 */
   .sc-results :global(.sc-idle), .sc-results :global(.sc-none), .sc-results :global(.sc-meta) { margin: 4px 0; color: var(--subtle); font: 11.5px var(--mono); }
   .sc-results :global(.sc-none) { color: #b9a8ff; }
-  .sc-results :global(.sc-meta) { margin: 8px 0 2px; color: var(--muted); letter-spacing: .06em; }
+  .sc-results :global(.sc-meta) { margin: 8px 0 4px; color: var(--muted); letter-spacing: .06em; }
   .sc-results :global(.sc-hit) { display: grid; grid-template-columns: 62px minmax(0, 1fr) 18px; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid rgba(148,182,210,.08); transition: background .18s ease; }
   .sc-results :global(.sc-hit:hover) { background: rgba(86,217,245,.035); }
+  .sc-results :global(.sc-hit:focus-visible) { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
   .sc-results :global(.sc-hit-day) { color: var(--cyan); font: 10px var(--mono); white-space: nowrap; }
+  .sc-results :global(.sc-hit-body) { display: grid; gap: 3px; min-width: 0; }
   .sc-results :global(.sc-hit-title) { overflow: hidden; color: #dce7ef; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; transition: color .18s; }
+  .sc-results :global(.sc-hit-desc) { overflow: hidden; color: var(--subtle); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+  .sc-results :global(.sc-mark) { padding: 0 2px; border-radius: 2px; background: rgba(86, 217, 245, .2); color: #9ff1ff; }
   .sc-results :global(.sc-hit:hover .sc-hit-title) { color: var(--cyan); }
   .sc-results :global(.sc-hit-arrow) { color: #6f8295; font: 13px var(--mono); transition: transform .18s, color .18s; }
   .sc-results :global(.sc-hit:hover .sc-hit-arrow) { color: var(--cyan); transform: translate(3px, -3px); }
@@ -57,64 +89,124 @@
     const form = root.querySelector<HTMLFormElement>('[data-sc-form]');
     const input = root.querySelector<HTMLInputElement>('[data-sc-input]');
     const results = root.querySelector<HTMLElement>('[data-sc-results]');
+    const quickChips = [...root.querySelectorAll<HTMLButtonElement>('[data-sc-quick]')];
 
-    // 索引直接取自周目录里的文章行，保持单一数据来源。
-    const index = [...panel.querySelectorAll<HTMLAnchorElement>('.article-row')].map(row => ({
-      href: row.getAttribute('href') || '#',
-      day: row.querySelector('.article-day')?.textContent?.trim() ?? '',
-      title: row.querySelector('.article-main strong')?.textContent?.trim() ?? '',
-      haystack: (row.dataset.search || '').toLowerCase(),
-    }));
+    if (results) {
+      // 索引直接取自周目录里的文章行，保持单一数据来源。
+      const index = [...panel.querySelectorAll<HTMLAnchorElement>('.article-row')].map((row) => ({
+        href: row.getAttribute('href') || '#',
+        day: row.querySelector('.article-day')?.textContent?.trim() ?? '',
+        title: row.querySelector('.article-main strong')?.textContent?.trim() ?? '',
+        desc: row.querySelector('.article-main small')?.textContent?.trim() ?? '',
+        haystack: (row.dataset.search || '').toLowerCase(),
+      }));
 
-    const reset = () => {
-      results.replaceChildren();
-      const idle = document.createElement('p');
-      idle.className = 'sc-idle';
-      // 重置时保持与初始标记一致，选择器 [data-sc-idle] 才始终有效。
-      idle.dataset.scIdle = '';
-      idle.textContent = '> 待命 · 输入关键词后按 Enter 检索全部学习记录';
-      results.appendChild(idle);
-    };
+      const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    const run = (rawQuery: string) => {
-      const query = rawQuery.trim().toLowerCase();
-      results.replaceChildren();
-      if (!query) { reset(); return; }
+      const appendHighlighted = (target: HTMLElement, text: string, terms: string[]) => {
+        if (!terms.length) {
+          target.textContent = text;
+          return;
+        }
+        const pattern = new RegExp(`(${terms.map(escapeRegExp).join('|')})`, 'gi');
+        const parts = text.split(pattern);
+        for (const part of parts) {
+          if (!part) continue;
+          const lower = part.toLowerCase();
+          if (terms.some((term) => term === lower)) {
+            const mark = document.createElement('mark');
+            mark.className = 'sc-mark';
+            mark.textContent = part;
+            target.appendChild(mark);
+          } else {
+            target.appendChild(document.createTextNode(part));
+          }
+        }
+      };
 
-      const hits = index.filter(item => item.haystack.includes(query));
-      const meta = document.createElement('p');
-      meta.className = 'sc-meta';
-      meta.textContent = hits.length ? `匹配 ${hits.length} 篇 · "${query}"` : `> 0 RESULTS · 没有匹配"${query}"的学习记录，换个关键词试试`;
-      meta.classList.add(hits.length ? 'sc-meta' : 'sc-none');
-      results.appendChild(meta);
+      const reset = () => {
+        results.replaceChildren();
+        const idle = document.createElement('p');
+        idle.className = 'sc-idle';
+        // 重置时保持与初始标记一致，选择器 [data-sc-idle] 才始终有效。
+        idle.dataset.scIdle = '';
+        idle.textContent = '> 待命 · 输入关键词后按 Enter 检索全部学习记录';
+        results.appendChild(idle);
+      };
 
-      for (const hit of hits) {
-        const link = document.createElement('a');
-        link.className = 'sc-hit';
-        link.href = hit.href;
-        const day = document.createElement('span');
-        day.className = 'sc-hit-day';
-        day.textContent = hit.day;
-        const title = document.createElement('strong');
-        title.className = 'sc-hit-title';
-        title.textContent = hit.title;
-        const arrow = document.createElement('span');
-        arrow.className = 'sc-hit-arrow';
-        arrow.textContent = '↗';
-        link.append(day, title, arrow);
-        results.appendChild(link);
-      }
-    };
+      const run = (rawQuery: string) => {
+        const query = rawQuery.trim().toLowerCase();
+        results.replaceChildren();
+        if (!query) { reset(); return; }
 
-    form?.addEventListener('submit', (event) => {
-      event.preventDefault();
-      run(input?.value ?? '');
-    });
-    input?.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        input.value = '';
-        reset();
-      }
-    });
+        const terms = query.split(/\s+/).filter(Boolean);
+        const hits = index.filter((item) => terms.every((term) => item.haystack.includes(term)));
+        const meta = document.createElement('p');
+        meta.className = hits.length ? 'sc-meta' : 'sc-none';
+        meta.textContent = hits.length
+          ? `匹配 ${hits.length} 篇 · "${query}"`
+          : `> 0 RESULTS · 没有匹配"${query}"的学习记录，换个关键词试试`;
+        results.appendChild(meta);
+
+        for (const hit of hits) {
+          const link = document.createElement('a');
+          link.className = 'sc-hit';
+          link.href = hit.href;
+
+          const day = document.createElement('span');
+          day.className = 'sc-hit-day';
+          day.textContent = hit.day;
+
+          const body = document.createElement('span');
+          body.className = 'sc-hit-body';
+
+          const title = document.createElement('strong');
+          title.className = 'sc-hit-title';
+          appendHighlighted(title, hit.title, terms);
+
+          const desc = document.createElement('small');
+          desc.className = 'sc-hit-desc';
+          desc.textContent = hit.desc;
+
+          body.append(title, desc);
+
+          const arrow = document.createElement('span');
+          arrow.className = 'sc-hit-arrow';
+          arrow.textContent = '↗';
+
+          link.append(day, body, arrow);
+          results.appendChild(link);
+        }
+      };
+
+      form?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        run(input?.value ?? '');
+      });
+
+      quickChips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const kw = chip.dataset.scQuick || '';
+          if (input) input.value = kw;
+          run(kw);
+        });
+      });
+
+      input?.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          input.value = '';
+          reset();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
+        if (panel.hidden) return;
+        const target = event.target as HTMLElement | null;
+        if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+        event.preventDefault();
+        input?.focus();
+      });
+    }
   }
 </script>

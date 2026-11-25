@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run check
+      - name: Build static site
+        run: npm run build
+      - name: Ensure Chrome for Playwright
+        run: npx playwright install chrome --with-deps
+      - name: Run Playwright tests
+        run: |
+          npx astro preview --host 127.0.0.1 --port 4322 &
+          SERVER_PID=$!
+          trap "kill $SERVER_PID 2>/dev/null || true" EXIT
+          npx wait-on http://127.0.0.1:4322 || sleep 3
+          TEST_BASE_URL=http://127.0.0.1:4322 npx playwright test --reporter=list

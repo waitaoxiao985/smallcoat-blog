@@ -9,7 +9,7 @@
   const panelFor = (button: HTMLButtonElement) =>
     document.getElementById(button.getAttribute('aria-controls') || '');
 
-  const spread = (container: HTMLElement, rows: Element[]) => {
+  const spread = (rows: Element[]) => {
     if (reduce.matches || typeof Element.prototype.animate !== 'function') return;
     rows.forEach((row, index) => {
       row.animate(
@@ -34,7 +34,7 @@
       gate.setAttribute('aria-expanded', String(!open));
       weeks.hidden = open;
       if (!open) {
-        spread(weeks, [...weeks.querySelectorAll(':scope > .week-group')]);
+        spread([...weeks.querySelectorAll(':scope > .week-group')]);
       } else {
         // 收起即重置：下次展开从全收起状态开始，保持一级一级点开。
         toggles.forEach((button) => {
@@ -51,7 +51,7 @@
       const open = button.getAttribute('aria-expanded') === 'true';
       button.setAttribute('aria-expanded', String(!open));
       panel.hidden = open;
-      if (!open) spread(panel, [...panel.querySelectorAll('.article-row')]);
+      if (!open) spread([...panel.querySelectorAll('.article-row')]);
     }));
   }
 </script>

@@ -8,6 +8,16 @@
     const lines = [...term.querySelectorAll<HTMLElement>('[data-line]')];
     const typed = lines.map((line) => line.querySelector<HTMLElement>('.whoami-typed'));
     const original = typed.map((t) => t?.textContent ?? '');
+    let aborted = false;
+
+    const revealStatic = () => {
+      aborted = true;
+      for (let i = 0; i < lines.length; i += 1) {
+        lines[i].style.visibility = 'visible';
+        const target = typed[i];
+        if (target) target.textContent = original[i];
+      }
+    };
 
     // 脚本生效：先隐藏全部行，等进入视口再逐行打字。
     lines.forEach((line) => { line.style.visibility = 'hidden'; });
@@ -18,12 +28,14 @@
       const caret = document.createElement('span');
       caret.className = 'whoami-caret';
       for (let i = 0; i < lines.length; i += 1) {
+        if (aborted) return;
         const target = typed[i];
         if (!target) continue;
         lines[i].style.visibility = 'visible';
         target.textContent = '';
         target.appendChild(caret);
         for (const ch of original[i]) {
+          if (aborted) return;
           target.insertBefore(document.createTextNode(ch), caret);
           await wait(26);
         }
@@ -35,9 +47,17 @@
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         observer.disconnect();
-        typeAll();
+        if (!reduce.matches) typeAll();
+        else revealStatic();
       }
     }, { threshold: .2 });
     observer.observe(term);
+
+    reduce.addEventListener('change', () => {
+      if (reduce.matches) {
+        observer.disconnect();
+        revealStatic();
+      }
+    });
   }
 </script>

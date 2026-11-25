@@ -4,24 +4,51 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const el = document.querySelector<HTMLElement>('[data-decode-text]');
 
-  if (el && !reduce.matches) {
+  if (el) {
     const target = el.textContent?.trim() || '';
     const glyphs = '▓▒░<>/\\|+=*#%01';
+    let intervalId = 0;
+    let stepTimeoutId = 0;
+
+    const stop = () => {
+      if (intervalId) { window.clearInterval(intervalId); intervalId = 0; }
+      if (stepTimeoutId) { window.clearTimeout(stepTimeoutId); stepTimeoutId = 0; }
+      el.textContent = target;
+    };
 
     const scramble = () => {
-      // 板块隐藏（display:none）或页面不可见时跳过本轮。
-      if (document.hidden || el.offsetParent === null) return;
+      if (reduce.matches || document.hidden || el.offsetParent === null) return;
+      if (stepTimeoutId) { window.clearTimeout(stepTimeoutId); stepTimeoutId = 0; }
       let frame = 0;
       const total = Math.ceil(target.length / 2) + 6;
       const run = () => {
+        if (reduce.matches) { stop(); return; }
         frame += 1;
         const reveal = Math.floor((frame / total) * target.length);
-        el.textContent = target.split('').map((ch, i) => (ch === ' ' || ch === '·' || i < reveal ? ch : glyphs[Math.floor(Math.random() * glyphs.length)])).join('');
-        if (frame < total) window.setTimeout(run, 26);
+        el.textContent = target
+          .split('')
+          .map((ch, i) => (ch === ' ' || ch === '·' || i < reveal ? ch : glyphs[Math.floor(Math.random() * glyphs.length)]))
+          .join('');
+        if (frame < total) stepTimeoutId = window.setTimeout(run, 26);
       };
       run();
     };
 
-    window.setInterval(scramble, 4200);
+    const start = () => {
+      if (reduce.matches || intervalId) return;
+      intervalId = window.setInterval(scramble, 4200);
+    };
+
+    window.addEventListener('hub:panelchange', (event) => {
+      const detail = (event as CustomEvent<string | undefined>).detail;
+      if (detail === 'articles') window.setTimeout(scramble, 80);
+    });
+
+    reduce.addEventListener('change', () => {
+      if (reduce.matches) stop();
+      else start();
+    });
+
+    if (!reduce.matches) start();
   }
 </script>

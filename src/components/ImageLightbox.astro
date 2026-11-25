@@ -1,0 +1,235 @@
+---
+---
+<dialog class="img-lightbox" data-lightbox aria-label="图片大图预览">
+  <div class="lb-shell">
+    <header class="lb-bar">
+      <span class="lb-counter" data-lb-counter>1 / 1</span>
+      <div class="lb-actions">
+        <button type="button" class="lb-btn" data-lb-zoom aria-pressed="false">1:1 缩放</button>
+        <button type="button" class="lb-btn lb-close" data-lb-close aria-label="关闭图片预览">× 关闭</button>
+      </div>
+    </header>
+    <div class="lb-stage" data-lb-stage>
+      <button type="button" class="lb-nav prev" data-lb-prev aria-label="上一张图片">←</button>
+      <img class="lb-img" data-lb-img alt="" />
+      <button type="button" class="lb-nav next" data-lb-next aria-label="下一张图片">→</button>
+    </div>
+    <p class="lb-caption" data-lb-caption></p>
+  </div>
+</dialog>
+
+<style>
+  .img-lightbox {
+    width: min(94vw, 1120px);
+    max-width: 94vw;
+    max-height: 92svh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid rgba(86, 217, 245, .35);
+    border-radius: 12px;
+    background: rgba(18, 11, 34, .97);
+    color: var(--text);
+    box-shadow: 0 32px 90px rgba(0, 0, 0, .7);
+  }
+  .img-lightbox::backdrop {
+    background: rgba(8, 5, 16, .82);
+    backdrop-filter: blur(6px);
+  }
+  .lb-shell {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    max-height: 92svh;
+  }
+  .lb-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .lb-counter {
+    color: var(--cyan);
+    font: 500 11px var(--mono);
+    letter-spacing: .1em;
+  }
+  .lb-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lb-btn {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font: 500 11px var(--mono);
+    cursor: pointer;
+    transition: color .16s, border-color .16s, background .16s;
+  }
+  .lb-btn:hover,
+  .lb-btn[aria-pressed="true"] {
+    color: var(--cyan);
+    border-color: rgba(86, 217, 245, .5);
+    background: rgba(86, 217, 245, .08);
+  }
+  .lb-btn:focus-visible,
+  .lb-nav:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+  }
+  .lb-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    padding: 20px 56px;
+    min-height: 240px;
+  }
+  .lb-stage.is-zoomed {
+    display: block;
+    text-align: center;
+  }
+  .lb-img {
+    display: block;
+    max-width: 100%;
+    max-height: 70svh;
+    width: auto;
+    height: auto;
+    margin-inline: auto;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+  }
+  .lb-stage.is-zoomed .lb-img {
+    max-width: none;
+    max-height: none;
+  }
+  .lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: rgba(21, 13, 38, .88);
+    color: var(--text);
+    font: 16px var(--mono);
+    cursor: pointer;
+    transition: color .16s, border-color .16s;
+  }
+  .lb-nav:hover {
+    color: var(--cyan);
+    border-color: rgba(86, 217, 245, .55);
+  }
+  .lb-nav.prev { left: 10px; }
+  .lb-nav.next { right: 10px; }
+  .lb-nav[hidden] { display: none; }
+  .lb-caption {
+    margin: 0;
+    padding: 10px 18px 14px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12.5px;
+    text-align: center;
+  }
+  .lb-caption:empty { display: none; }
+
+  :global(.article-body img[data-zoomable]) {
+    cursor: zoom-in;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  :global(.article-body img[data-zoomable]:hover),
+  :global(.article-body img[data-zoomable]:focus-visible) {
+    border-color: rgba(86, 217, 245, .55);
+    box-shadow: 0 0 24px rgba(86, 217, 245, .12);
+    outline: none;
+  }
+  @media (max-width: 700px) {
+    .lb-stage { padding: 14px 12px; }
+    .lb-nav { width: 34px; height: 38px; }
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const images = [...document.querySelectorAll<HTMLImageElement>('.article-body img')];
+
+  if (dialog && images.length && typeof dialog.showModal === 'function') {
+    const imgEl = dialog.querySelector<HTMLImageElement>('[data-lb-img]');
+    const captionEl = dialog.querySelector<HTMLElement>('[data-lb-caption]');
+    const counterEl = dialog.querySelector<HTMLElement>('[data-lb-counter]');
+    const stageEl = dialog.querySelector<HTMLElement>('[data-lb-stage]');
+    const zoomBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-zoom]');
+    const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-close]');
+    const prevBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-prev]');
+    const nextBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-next]');
+
+    let current = 0;
+    let triggerEl: HTMLImageElement | null = null;
+
+    const render = (index: number) => {
+      current = (index + images.length) % images.length;
+      const target = images[current];
+      if (imgEl) {
+        imgEl.src = target.currentSrc || target.src;
+        imgEl.alt = target.alt || '';
+      }
+      if (captionEl) captionEl.textContent = target.alt || '';
+      if (counterEl) counterEl.textContent = `${current + 1} / ${images.length}`;
+      if (prevBtn) prevBtn.hidden = images.length <= 1;
+      if (nextBtn) nextBtn.hidden = images.length <= 1;
+      stageEl?.classList.remove('is-zoomed');
+      zoomBtn?.setAttribute('aria-pressed', 'false');
+    };
+
+    const openAt = (index: number, trigger: HTMLImageElement) => {
+      triggerEl = trigger;
+      render(index);
+      if (!dialog.open) dialog.showModal();
+    };
+
+    images.forEach((img, index) => {
+      img.dataset.zoomable = 'true';
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', img.alt ? `放大查看图片：${img.alt}` : `放大查看第 ${index + 1} 张图片`);
+      img.addEventListener('click', () => openAt(index, img));
+      img.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openAt(index, img);
+        }
+      });
+    });
+
+    closeBtn?.addEventListener('click', () => dialog.close());
+    prevBtn?.addEventListener('click', () => render(current - 1));
+    nextBtn?.addEventListener('click', () => render(current + 1));
+    zoomBtn?.addEventListener('click', () => {
+      const zoomed = stageEl?.classList.toggle('is-zoomed') ?? false;
+      zoomBtn.setAttribute('aria-pressed', String(zoomed));
+    });
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('keydown', (event) => {
+      if (images.length <= 1) return;
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        render(current - 1);
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        render(current + 1);
+      }
+    });
+    dialog.addEventListener('close', () => {
+      triggerEl?.focus({ preventScroll: true });
+      triggerEl = null;
+    });
+  }
+</script>

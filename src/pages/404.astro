@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
 ---
 
-<BaseLayout title="404 · 页面不存在 — SmalLCoat" description="你访问的页面不存在或已被移动。">
-  <main class="nf">
+<BaseLayout title={`404 · 页面不存在 — ${SITE.name}`} description="你访问的页面不存在或已被移动。" noindex={true}>
+  <main class="nf" id="main-content">
     <div class="nf-grid" aria-hidden="true"></div>
     <section class="nf-console" aria-labelledby="nf-title">
       <header class="nf-bar">
@@ -24,12 +25,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <div class="nf-actions">
           <a class="nf-btn primary" href="/">← 返回入口</a>
           <a class="nf-btn" href="/#articles">查看学习记录</a>
-          <a class="nf-btn ghost" href="https://github.com/waitaoxiao985" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="nf-btn" href="/tags/">标签索引</a>
+          <a class="nf-btn" href="/archive/">文章归档</a>
+          <a class="nf-btn ghost" href={SITE.github} target="_blank" rel="noreferrer">GitHub ↗</a>
         </div>
       </div>
 
       <footer class="nf-foot">
-        <span>SmalLCoat · 个人技术博客</span>
+        <span>{SITE.name} · 个人技术博客</span>
         <span class="nf-foot-dim">按 ESC 返回首页</span>
       </footer>
     </section>
@@ -108,7 +111,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .nf-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
   .nf-btn {
-    padding: 11px 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
     border: 1px solid var(--line);
     border-radius: 7px;
     color: var(--text);
@@ -116,6 +123,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transition: border-color .2s ease, color .2s ease, box-shadow .2s ease;
   }
   .nf-btn:hover { border-color: rgba(86, 217, 245, .5); color: var(--cyan); box-shadow: inset 0 0 18px rgba(86, 217, 245, .08); }
+  .nf-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
   .nf-btn.primary { border-color: rgba(86, 217, 245, .45); color: var(--cyan); }
   .nf-btn.ghost { color: var(--muted); }
 
@@ -140,8 +148,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const pathEl = document.getElementById('nf-path');
   if (pathEl) pathEl.textContent = location.pathname;
 
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const codeEl = document.querySelector<HTMLElement>('[data-decode]');
-  if (codeEl) {
+  if (codeEl && !reduceMotion) {
     const target = codeEl.textContent ?? '404';
     const glyphs = '0123456789ABCDEF#/\\_';
     let frame = 0;

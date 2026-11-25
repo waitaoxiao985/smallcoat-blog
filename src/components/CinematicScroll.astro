@@ -10,6 +10,7 @@ import '../styles/cinematic.css';
   const media = matchMedia('(min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)');
   const clamp = (value: number) => Math.max(0, Math.min(1, value));
   let frame = 0;
+  let currentActive = 0;
 
   function render() {
     frame = 0;
@@ -17,6 +18,7 @@ import '../styles/cinematic.css';
     const progress = clamp(-projects.getBoundingClientRect().top / Math.max(1, projects.offsetHeight - innerHeight));
     const position = progress * (panels.length - 1);
     const active = Math.round(position);
+    currentActive = active;
     panels.forEach((panel, index) => {
       const distance = index - position;
       const isActive = index === active;
@@ -35,6 +37,17 @@ import '../styles/cinematic.css';
     if (media.matches && !frame) frame = requestAnimationFrame(render);
   }
 
+  function jumpTo(index: number) {
+    if (!projects) return;
+    const clamped = Math.max(0, Math.min(panels.length - 1, index));
+    const top = projects.getBoundingClientRect().top + scrollY;
+    window.scrollTo({
+      top: top + (projects.offsetHeight - innerHeight) * clamped / Math.max(1, panels.length - 1),
+      behavior: 'instant',
+    });
+    schedule();
+  }
+
   function configure() {
     cancelAnimationFrame(frame);
     frame = 0;
@@ -43,19 +56,31 @@ import '../styles/cinematic.css';
       render();
     } else {
       root.removeAttribute('data-cinematic');
-      panels.forEach(panel => {
+      panels.forEach((panel) => {
         panel.inert = false;
         panel.removeAttribute('data-active');
-        ['opacity', 'transform', 'visibility'].forEach(property => panel.style.removeProperty(property));
+        ['opacity', 'transform', 'visibility'].forEach((property) => panel.style.removeProperty(property));
       });
     }
   }
-  buttons.forEach((button, index) => button.addEventListener('click', () => {
-    if (!projects) return;
-    const top = projects.getBoundingClientRect().top + scrollY;
-    window.scrollTo({ top: top + (projects.offsetHeight - innerHeight) * index / Math.max(1, panels.length - 1), behavior: 'instant' });
-    schedule();
-  }));
+
+  buttons.forEach((button, index) => {
+    button.addEventListener('click', () => jumpTo(index));
+    button.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        const next = (currentActive + 1) % panels.length;
+        jumpTo(next);
+        buttons[next]?.focus();
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const prev = (currentActive - 1 + panels.length) % panels.length;
+        jumpTo(prev);
+        buttons[prev]?.focus();
+      }
+    });
+  });
+
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
   window.addEventListener('pageshow', schedule);

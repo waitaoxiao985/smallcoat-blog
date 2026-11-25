@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import BackToTop from '../components/BackToTop.astro';
+import {
+  estimateReadingStats,
+  formatDate,
+  formatDayLabel,
+  getAllTags,
+  getPublishedPosts,
+  getTopicTags,
+  getWeekGroups,
+  tagToSlug,
+} from '../lib/posts';
+import { SITE } from '../lib/site';
+
+const posts = await getPublishedPosts('asc');
+const { groups, uncategorized } = getWeekGroups(posts);
+const allTags = getAllTags(posts);
+
+const statsById = new Map(posts.map((post) => [post.id, estimateReadingStats(post.body)]));
+const totalWords = [...statsById.values()].reduce((sum, item) => sum + item.wordCount, 0);
+const totalImages = [...statsById.values()].reduce((sum, item) => sum + item.imageCount, 0);
+const activeWeeks = groups.filter((group) => group.posts.length > 0);
+---
+<BaseLayout
+  title={`文章归档 — ${SITE.name}`}
+  description={`SmalLCoat 博客全部 ${posts.length} 篇学习记录完整时间归档，按周次平铺浏览。`}
+>
+  <SiteHeader active="archive" />
+
+  <main class="subpage" id="main-content">
+    <div class="container">
+      <div class="subpage-console">
+        <header class="console-bar">
+          <span>SC / COMPLETE ARCHIVE</span>
+          <a class="rss-pill" href="/rss.xml">RSS 订阅 ↗</a>
+        </header>
+
+        <div class="subpage-head">
+          <div class="section-kicker">Timeline / 完整归档</div>
+          <h1 class="subpage-title">全部学习记录时间线</h1>
+          <p class="subpage-desc">按学习周次完整平铺展示所有已发布笔记，便于系统复习或浏览器内直接检索。</p>
+        </div>
+
+        <section class="archive-stats" aria-label="博客统计">
+          <div class="stat-box"><strong>{posts.length}</strong><span>已发布笔记</span></div>
+          <div class="stat-box"><strong>{(totalWords / 10000).toFixed(1)} 万</strong><span>累计字数</span></div>
+          <div class="stat-box"><strong>{totalImages}</strong><span>实战截图</span></div>
+          <div class="stat-box"><strong>{allTags.length}</strong><span>技术标签</span></div>
+        </section>
+
+        <nav class="week-jump" aria-label="按周跳转">
+          {activeWeeks.map((group) => (
+            <a class="jump-chip" href={`#archive-week-${group.week}`}>
+              WEEK 0{group.week} · {group.posts.length} 篇
+            </a>
+          ))}
+        </nav>
+
+        <div class="archive-groups">
+          {activeWeeks.map((group) => (
+            <section class="archive-week" id={`archive-week-${group.week}`} aria-labelledby={`aw-title-${group.week}`}>
+              <header class="aw-head">
+                <div>
+                  <span class="aw-kicker">WEEK 0{group.week} · {group.stage}</span>
+                  <h2 id={`aw-title-${group.week}`}>{group.label}</h2>
+                  <p class="aw-summary">{group.summary}</p>
+                </div>
+                <span class="aw-count">{String(group.posts.length).padStart(2, '0')} 篇</span>
+              </header>
+
+              <div class="aw-list">
+                {group.posts.map((post) => {
+                  const stats = statsById.get(post.id)!;
+                  const tags = getTopicTags(post);
+                  return (
+                    <article class="aw-item">
+                      <div class="aw-item-top">
+                        <span class="aw-day">{formatDayLabel(post.id)}</span>
+                        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                        <span>·</span>
+                        <span>约 {stats.minutes} 分钟</span>
+                      </div>
+                      <h3 class="aw-item-title">
+                        <a href={`/posts/${post.id}/`}>{post.data.title}</a>
+                      </h3>
+                      <p class="aw-item-desc">{post.data.description}</p>
+                      {tags.length > 0 && (
+                        <div class="aw-item-tags">
+                          {tags.map((tag) => (
+                            <a href={`/tags/${tagToSlug(tag)}/`}>#{tag}</a>
+                          ))}
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+
+          {uncategorized.length > 0 && (
+            <section class="archive-week" id="archive-notes" aria-labelledby="aw-title-notes">
+              <header class="aw-head">
+                <div>
+                  <span class="aw-kicker">NOTES</span>
+                  <h2 id="aw-title-notes">独立技术文章</h2>
+                </div>
+                <span class="aw-count">{String(uncategorized.length).padStart(2, '0')} 篇</span>
+              </header>
+              <div class="aw-list">
+                {uncategorized.map((post) => {
+                  const stats = statsById.get(post.id)!;
+                  return (
+                    <article class="aw-item">
+                      <div class="aw-item-top">
+                        <span class="aw-day">NOTE</span>
+                        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                        <span>·</span>
+                        <span>约 {stats.minutes} 分钟</span>
+                      </div>
+                      <h3 class="aw-item-title"><a href={`/posts/${post.id}/`}>{post.data.title}</a></h3>
+                      <p class="aw-item-desc">{post.data.description}</p>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SiteFooter />
+  <BackToTop />
+
+  <style>
+    .subpage { min-height: calc(100svh - 135px); padding: 42px 0 76px; }
+    .subpage-console {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(28, 18, 51, .52), rgba(28, 18, 51, .18));
+      padding: clamp(20px, 3.5vw, 36px);
+      box-shadow: inset 0 0 60px rgba(86, 217, 245, .03), 0 24px 60px rgba(0, 0, 0, .26);
+    }
+    .console-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font: 500 11px var(--mono);
+      letter-spacing: .12em;
+    }
+    .rss-pill {
+      color: var(--cyan);
+      padding: 4px 10px;
+      border: 1px solid rgba(86, 217, 245, .35);
+      border-radius: 4px;
+    }
+    .rss-pill:hover { background: rgba(86, 217, 245, .08); }
+    .subpage-head { margin-top: 24px; }
+    .subpage-title { margin: 10px 0 8px; font-size: clamp(28px, 4.5vw, 40px); letter-spacing: -.045em; }
+    .subpage-desc { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.75; }
+
+    .archive-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+    .stat-box {
+      display: grid;
+      gap: 5px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21, 13, 38, .55);
+    }
+    .stat-box strong { color: var(--cyan); font: 700 22px var(--mono); }
+    .stat-box span { color: var(--muted); font-size: 12px; }
+
+    .week-jump {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+    .jump-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      font: 11px var(--mono);
+    }
+    .jump-chip:hover { color: var(--cyan); border-color: rgba(86, 217, 245, .45); }
+
+    .archive-groups {
+      display: grid;
+      gap: 34px;
+      margin-top: 34px;
+    }
+    .archive-week {
+      scroll-margin-top: 76px;
+      padding-top: 26px;
+      border-top: 1px solid var(--line);
+    }
+    .aw-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .aw-kicker { color: var(--cyan); font: 10.5px var(--mono); letter-spacing: .12em; }
+    .aw-head h2 { margin: 6px 0 6px; font-size: 22px; letter-spacing: -.03em; }
+    .aw-summary { margin: 0; color: var(--muted); font-size: 13px; }
+    .aw-count { flex-shrink: 0; color: var(--subtle); font: 11px var(--mono); }
+
+    .aw-list { display: grid; gap: 10px; }
+    .aw-item {
+      padding: 15px 17px;
+      border: 1px solid rgba(183, 168, 226, .12);
+      border-radius: 8px;
+      background: rgba(21, 13, 38, .48);
+      transition: border-color .18s;
+    }
+    .aw-item:hover { border-color: rgba(86, 217, 245, .38); }
+    .aw-item-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      color: var(--subtle);
+      font: 11px var(--mono);
+    }
+    .aw-day { color: var(--cyan); font-weight: 500; }
+    .aw-item-title { margin: 8px 0 6px; font-size: 16px; line-height: 1.5; }
+    .aw-item-title a { color: var(--text); }
+    .aw-item-title a:hover { color: var(--cyan); }
+    .aw-item-desc { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .aw-item-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .aw-item-tags a {
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: #a5b8c8;
+      font: 10.5px var(--mono);
+    }
+    .aw-item-tags a:hover { color: var(--cyan); border-color: rgba(86, 217, 245, .45); }
+    .jump-chip:focus-visible,
+    .aw-item-title a:focus-visible,
+    .aw-item-tags a:focus-visible,
+    .rss-pill:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 700px) {
+      .archive-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</BaseLayout>
